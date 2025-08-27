@@ -1,3 +1,4 @@
+<!-- /index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,23 +14,30 @@
 
   <style>
     /* ------------------------------
-       THEME TOKENS
+       THEME TOKENS (flat + gradients)
     ------------------------------ */
     :root{
-      --dark:#18230F;
+      --dark:#0e1310;
       --accent:#1F7D53;
       --accent-2:#166c44;
       --light:#f9f9f9;
       --muted:rgba(249,249,249,.82);
       --ring: 0 0 0 3px rgba(31,125,83,.35);
-      --shadow-1: 0 8px 30px rgba(0,0,0,.45);
-      --shadow-2: 0 18px 50px rgba(0,0,0,.55);
+      --shadow-1: 0 6px 18px rgba(0,0,0,.35);
+      --shadow-2: 0 12px 28px rgba(0,0,0,.45);
       --radius:14px;
       --header:'Futura PT', sans-serif;
       --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-      /* Dynamic background color (updated via JS) */
-      --bg: #102015;
+      /* Background gradient variables */
+      --bg: #102015; /* dynamic tint updated via JS */
+      --bg1: #0c120f;
+      --bg2: #0b1109;
+      --bg3: #101a13;
+
+      /* Card/case flat gradients */
+      --surface: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      --surface-strong: linear-gradient(180deg, rgba(31,125,83,.18), rgba(31,125,83,.06));
     }
 
     /* ------------------------------
@@ -41,27 +49,17 @@
       margin:0; color:var(--light); font-family:var(--sans);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
       overflow-x:hidden; text-align:center; min-height:100%;
-      background:#0b1109;
+      background: radial-gradient(1000px 600px at 50% 15%, color-mix(in oklab, var(--bg) 75%, black) 10%, transparent 60%),
+                  radial-gradient(800px 500px at 100% 85%, color-mix(in oklab, var(--bg) 55%, black) 12%, transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2) 65%, var(--bg3));
+      transition: background 450ms ease;
     }
     img{max-width:100%;display:block}
     a{color:inherit}
     :focus-visible{outline:none; box-shadow: var(--ring); border-radius:10px}
 
-    /* Dynamic background layers */
-    .bg{
-      position:fixed; inset:0; z-index:-2;
-      background:
-        radial-gradient(1200px 600px at 50% 20%, color-mix(in oklab, var(--bg) 70%, #000) 18%, transparent 60%),
-        radial-gradient(900px 500px at 90% 80%, color-mix(in oklab, var(--bg) 55%, #000) 12%, transparent 60%),
-        linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, #000), #0b1109 100%);
-      transition: background 450ms ease;
-    }
-    .bg-hero{
-      position:fixed; inset:0; z-index:-1; opacity:.25;
-      background: url('https://images.unsplash.com/photo-1529101091764-c3526daf38fe?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
-      mix-blend-mode: lighten;
-      transition: opacity .4s ease;
-    }
+    /* Removed photo texture for flatter look */
+    .bg-hero{ display:none !important; }
 
     /* ------------------------------
        LAYOUT
@@ -71,13 +69,38 @@
       background:linear-gradient(180deg,rgba(0,0,0,.42),transparent);
       backdrop-filter:saturate(120%) blur(2px);
     }
+    header .header-inner{
+      width:min(1120px,92vw); margin-inline:auto;
+      display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    }
+    .brand{ display:flex; align-items:center; gap:.75rem }
+    .brand-dot{ width:10px; height:10px; border-radius:50%; background:var(--accent) }
+
     .container{
       width:min(1120px,92vw); margin-inline:auto;
       display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center
     }
 
-    /* Old nav hidden (radial is centerpiece) */
-    nav{ display:none !important; }
+    /* Mini nav (appears after welcome screen) */
+    .site-nav{
+      display:flex; align-items:center; gap:.25rem;
+      background: rgba(255,255,255,.03);
+      padding:.35rem; border-radius:9999px; border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:saturate(120%) blur(6px);
+      max-width:92vw; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      opacity:0; visibility:hidden; transform: translateY(-6px);
+      transition: opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+    }
+    body.show-mini-nav .site-nav{ opacity:1; visibility:visible; transform: translateY(0); transition-delay: 0s; }
+    .site-nav a{
+      font-family:var(--header); font-weight:800; letter-spacing:.03em; font-size:.9rem;
+      padding:.5rem .75rem; border-radius:9999px; text-decoration:none; color:var(--muted);
+      white-space:nowrap; transition: background .2s ease, color .2s ease, filter .2s ease;
+    }
+    .site-nav a:hover{ background: rgba(255,255,255,.06); color:#fff }
+    .site-nav a[aria-current="page"]{ background: var(--accent); color:#fff; box-shadow: 0 6px 18px rgba(31,125,83,.35) }
+
+    nav{ display:none } /* legacy */
 
     main{isolation:isolate}
     section{
@@ -86,8 +109,9 @@
     }
 
     h1,h2,h3{font-family:var(--header); margin:0}
-    h1{font-size:clamp(2.4rem,6vw,4.2rem); color:var(--accent); letter-spacing:-.5px}
+    h1{font-size:clamp(2.6rem,6vw,4.4rem); color:var(--accent); letter-spacing:-.5px}
     h2{font-size:clamp(1.25rem,2.5vw,2rem); margin-top:1rem; color:var(--light)}
+    h3.tagline{font-size:clamp(1.05rem,2.1vw,1.5rem); margin-top:.75rem; font-weight:800; letter-spacing:.02em; color:var(--muted)}
     p{max-width:70ch; margin:1rem auto 0; color:var(--muted); line-height:1.7}
 
     .skills-grid,.projects-grid{
@@ -95,17 +119,18 @@
       max-width:1200px; margin:2rem auto; justify-items:center
     }
     .card{
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      background:var(--surface);
       padding:1.75rem; border-radius:var(--radius); box-shadow:var(--shadow-1);
-      transition:transform .36s cubic-bezier(.22,.9,.3,1), box-shadow .36s; max-width:320px
+      transition:transform .28s cubic-bezier(.22,.9,.3,1), box-shadow .28s; max-width:320px
     }
-    .card:hover{transform:translateY(-8px) scale(1.02); box-shadow:var(--shadow-2)}
+    .card:hover{transform:translateY(-6px); box-shadow:var(--shadow-2)}
     .case{
-      background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, color-mix(in oklab, var(--accent) 90%, black), color-mix(in oklab, var(--accent) 65%, black));
+      color:#fff; display:flex; align-items:center; justify-content:center;
       padding:3.25rem 1.25rem; border-radius:12px; font-weight:700; font-size:1.2rem; cursor:pointer;
-      transition:transform .3s ease, box-shadow .3s ease; max-width:320px
+      transition:transform .25s ease, box-shadow .25s ease; max-width:320px
     }
-    .case:hover{transform:scale(1.03); box-shadow:0 18px 50px rgba(31,125,83,.22)}
+    .case:hover{transform:translateY(-3px); box-shadow:0 16px 46px rgba(31,125,83,.22)}
     .contact a{
       display:inline-block; margin-top:1.25rem; padding:.75rem 1.25rem; background:var(--accent); color:#fff;
       text-decoration:none; border-radius:10px; transition: background .2s ease, transform .2s ease
@@ -122,13 +147,15 @@
 
     /* ------------------------------
        RADIAL MENU (centerpiece)
-       - Full circle on desktop
-       - Half arc on mobile
+       Center-based transforms so labels are truly centered around the ring
     ------------------------------ */
     #radial-menu-wrap{
       position:fixed; inset:0; z-index:10990;
       display:grid; place-items:center; pointer-events:none;
+      opacity:1; transform: scale(1); transition: opacity .28s ease, transform .28s ease;
     }
+    #radial-menu-wrap[data-visible="false"]{ opacity:0; transform: scale(.96); pointer-events:none }
+
     .radial-menu{ position:relative; width:480px; height:480px; pointer-events:none; }
     .radial-menu *{ pointer-events:auto; }
 
@@ -138,31 +165,28 @@
       box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 60px rgba(31,125,83,.08);
       transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease, opacity .2s ease;
       backdrop-filter: blur(3px) saturate(120%);
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      background: radial-gradient(120px 120px at 50% 40%, rgba(255,255,255,.05), rgba(255,255,255,0));
     }
 
     .rm-link{
-      position:absolute; color:var(--light); text-decoration:none; font-family:var(--header);
+      position:absolute; top:50%; left:50%; transform-origin:50% 50%;
+      color:var(--light); text-decoration:none; font-family:var(--header);
       font-weight:800; letter-spacing:.04em; text-shadow:0 2px 10px rgba(0,0,0,.35);
-      will-change: transform; transition: color .2s ease, opacity .2s ease, padding-left .2s ease, filter .2s ease;
+      transition: color .2s ease, opacity .2s ease, filter .2s ease, transform .18s ease;
       outline:none; filter: drop-shadow(0 6px 20px rgba(0,0,0,.45));
+      white-space:nowrap;
     }
     .rm-hover{
-      position:absolute; opacity:0; height:2.35rem; border-right:7px solid var(--accent);
-      transition: opacity .2s ease, border-color .2s ease;
+      position:absolute; top:50%; left:50%; opacity:0; height:2.35rem;
+      border-right:7px solid var(--accent);
+      transition: opacity .2s ease, border-color .2s ease, transform .18s ease;
+      transform-origin:0 50%;
     }
 
     /* Active state */
-    .rm-link[aria-current="page"]{
-      color:#fff;
-      filter: drop-shadow(0 0 0 rgba(0,0,0,0)) brightness(1.15);
-    }
-    .rm-link[aria-current="page"] + .rm-hover{
-      opacity:1;
-      border-right-color:var(--accent);
-    }
+    .rm-link[aria-current="page"]{ color:#fff; filter: brightness(1.15); }
+    .rm-link[aria-current="page"] + .rm-hover{ opacity:1; border-right-color:var(--accent); }
 
-    /* Shrink menu slightly when not at top so content breathes */
     .shrink .radial-menu{ transform: scale(.9); transition: transform .25s ease }
 
     /* FAB toggle for small screens */
@@ -180,33 +204,24 @@
     .radial-menu[data-collapsed="true"] .rm-link,
     .radial-menu[data-collapsed="true"] .rm-hover{ opacity:0; pointer-events:none }
 
-    @media (max-width: 900px){
-      .radial-menu{ width:360px; height:360px }
-    }
-    @media (max-width: 820px){
-      .radial-menu{ width:320px; height:320px }
-      .radial-fab{ display:flex }
-    }
+    @media (max-width: 900px){ .radial-menu{ width:360px; height:360px } }
+    @media (max-width: 820px){ .radial-menu{ width:320px; height:320px } .radial-fab{ display:flex } }
 
     /* Respect reduced motion */
-    @media (prefers-reduced-motion: reduce){
-      *{scroll-behavior:auto !important}
-      .card,.case,.cursor{transition:none !important}
-    }
+    @media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto !important} .card,.case,.cursor{transition:none !important} }
   </style>
 </head>
 <body>
-  <!-- dynamic background layers -->
-  <div class="bg" id="bg"></div>
+  <!-- gradient-only background -->
   <div class="bg-hero" id="bg-hero" aria-hidden="true"></div>
 
   <header role="banner">
-    <div class="container">
-      <div style="display:flex;align-items:center;gap:.75rem">
-        <div aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div>
+    <div class="header-inner">
+      <div class="brand">
+        <div aria-hidden="true" class="brand-dot"></div>
         <strong style="font-family:var(--header)">Joel N. Roberson</strong>
       </div>
-      <!-- nav intentionally hidden -->
+      <nav id="site-nav" class="site-nav" aria-label="Section navigation"></nav>
     </div>
   </header>
 
@@ -216,15 +231,16 @@
     <section class="hero" id="home" aria-label="Introduction" data-color="#1F7D53">
       <div class="container">
         <h1>Joel N. Roberson</h1>
-        <h2>Marketing & Growth Strategist — Bridging creativity with analytics</h2>
-        <p>Skilled in SEO, Google Ads, partnerships, event marketing, and digital media production. Proven success modernizing marketing systems for small and mid-size businesses, growing revenue, and amplifying creative brands.</p>
+        <!-- Home subhead + paragraph moved to About for requested layout -->
       </div>
     </section>
 
     <section id="about" aria-labelledby="about-h" data-color="#27ae60">
       <div class="container">
         <h2 id="about-h">About</h2>
-        <p>I'm Joel — a marketing & growth strategist who balances creative production with data-driven systems to deliver measurable results across search, paid media, partnerships, and live events. B.S. IT Management, FSCJ (2018–2022).</p>
+        <h3 class="tagline">Marketing &amp; Growth Strategist — Bridging creativity with analytics</h3>
+        <p>Skilled in SEO, Google Ads, partnerships, event marketing, and digital media production. Proven success modernizing marketing systems for small and mid-size businesses, growing revenue, and amplifying creative brands.</p>
+        <p>I'm Joel — a marketing &amp; growth strategist who balances creative production with data-driven systems to deliver measurable results across search, paid media, partnerships, and live events. B.S. IT Management, FSCJ (2018–2022).</p>
       </div>
     </section>
 
@@ -232,9 +248,9 @@
       <div class="container">
         <h2 id="skills-h">Skills</h2>
         <div class="skills-grid">
-          <div class="card"><h3>Growth & Digital Strategy</h3><p>SEO/SEM, Google Ads, GA4, funnel optimization, paid media, CRM automation.</p></div>
-          <div class="card"><h3>Creative & Brand</h3><p>Adobe Suite, video production, photography, creative direction, web design (Wix/WordPress).</p></div>
-          <div class="card"><h3>Leadership & Ops</h3><p>Team leadership (20+), revenue strategy, event & trade show marketing, partnership development.</p></div>
+          <div class="card"><h3>Growth &amp; Digital Strategy</h3><p>SEO/SEM, Google Ads, GA4, funnel optimization, paid media, CRM automation.</p></div>
+          <div class="card"><h3>Creative &amp; Brand</h3><p>Adobe Suite, video production, photography, creative direction, web design (Wix/WordPress).</p></div>
+          <div class="card"><h3>Leadership &amp; Ops</h3><p>Team leadership (20+), revenue strategy, event &amp; trade show marketing, partnership development.</p></div>
         </div>
       </div>
     </section>
@@ -245,7 +261,7 @@
         <div class="skills-grid">
           <div class="card"><h3>Marketing Manager — One on One / Next Level</h3><p>Modernized marketing systems into scalable growth engines, generating $2M+ in under 2 years. Built SEO + Google Ads with geo-targeting and GSC insights. Achieved 8.6× ROAS.</p></div>
           <div class="card"><h3>Social Media Specialist — UMove Marketing</h3><p>Managed 15 accounts (~500k followers). Insight-driven strategies produced up to +315% monthly engagement growth. Video production and live event coverage.</p></div>
-          <div class="card"><h3>Freelance Digital Content Producer</h3><p>Produced 40+ music videos and content campaigns, contributing to 7M+ streams and working with Grammy-nominated artists. Expert in Premiere & Photoshop.</p></div>
+          <div class="card"><h3>Freelance Digital Content Producer</h3><p>Produced 40+ music videos and content campaigns, contributing to 7M+ streams and working with Grammy-nominated artists. Expert in Premiere &amp; Photoshop.</p></div>
         </div>
       </div>
     </section>
@@ -271,8 +287,8 @@
     </section>
   </main>
 
-  <!-- Radial menu centerpiece -->
-  <div id="radial-menu-wrap" role="region" aria-label="Quick actions">
+  <!-- Radial menu centerpiece (welcome screen) -->
+  <div id="radial-menu-wrap" role="region" aria-label="Quick actions" data-visible="true">
     <button class="radial-fab" id="radial-fab" aria-controls="radial-menu" aria-expanded="true" title="Toggle quick menu">☰</button>
     <div id="radial-menu" class="radial-menu" data-collapsed="false">
       <div class="rm-circle" aria-hidden="true"></div>
@@ -292,7 +308,6 @@
          Utilities
       ------------------------------ */
       function setTransform(el, val){ el.style.transform = val; el.style.webkitTransform = val; }
-      function setTransformOrigin(el, val){ el.style.transformOrigin = val; el.style.webkitTransformOrigin = val; }
       function setTransition(el, val){ el.style.transition = val; el.style.webkitTransition = val; }
       function hexToRgba(hex, alpha){
         let h = hex.replace('#','');
@@ -302,11 +317,10 @@
       }
 
       /* ------------------------------
-         Dynamic Background Engine
+         Dynamic BG tint (flat gradients)
       ------------------------------ */
       const bgRoot = document.documentElement;
-      const heroOverlay = document.getElementById('bg-hero');
-      function setBG(color){ bgRoot.style.setProperty('--bg', color); if (heroOverlay) heroOverlay.style.opacity = '.25'; }
+      function setBG(color){ bgRoot.style.setProperty('--bg', color); }
 
       /* ------------------------------
          GSAP niceties (optional)
@@ -317,7 +331,7 @@
           const sections = document.querySelectorAll('main section');
           sections.forEach((sec)=>{
             gsap.fromTo(sec,{scale:.96,opacity:0},{
-              scale:1, opacity:1, duration:1, ease:'power3.out',
+              scale:1, opacity:1, duration:0.9, ease:'power3.out',
               scrollTrigger: window.ScrollTrigger ? {
                 trigger:sec, start:'top 80%', end:'bottom 20%', toggleActions:'play none none reverse'
               } : undefined
@@ -337,18 +351,18 @@
         document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
         document.querySelectorAll('a,button,.case,.card').forEach(el=>{
           el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
-        el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+          el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
         });
       }
 
       /* ------------------------------
-         RADIAL MENU (centerpiece)
+         RADIAL MENU (centered geometry)
       ------------------------------ */
+      const radialWrap = document.getElementById('radial-menu-wrap');
       const menu   = document.getElementById('radial-menu');
       const ring   = menu.querySelector('.rm-circle');
       const fab    = document.getElementById('radial-fab');
 
-      // Items also drive background colors
       const items = [
         { label:'Home',       href:'#home',       color:'#1F7D53' },
         { label:'About',      href:'#about',      color:'#27ae60' },
@@ -358,19 +372,17 @@
         { label:'Contact',    href:'#contact',    color:'#d35400' }
       ];
 
-      // Build DOM links
-      items.forEach(obj=>{
+      // Build Radial DOM links + map back to config
+      const linkMap = new Map();
+      items.forEach((obj, idx)=>{
         const a = document.createElement('a');
         a.className = 'rm-link';
-        a.textContent = obj.label;
-        a.href = obj.href;
-        a.setAttribute('data-color', obj.color);
-        a.setAttribute('role','link');
+        a.textContent = obj.label; a.href = obj.href; a.setAttribute('data-color', obj.color);
+        a.setAttribute('role','link'); a.dataset.idx = String(idx);
         const hover = document.createElement('span');
         hover.className = 'rm-hover';
-        menu.appendChild(a);
-        menu.appendChild(hover);
-        obj.el = a; obj.hover = hover;
+        menu.appendChild(a); menu.appendChild(hover);
+        obj.el = a; obj.hover = hover; linkMap.set(a, obj);
 
         // interactions
         a.addEventListener('mouseover', linkOver);
@@ -384,15 +396,14 @@
             if (target){
               e.preventDefault();
               target.scrollIntoView({behavior:'smooth', block:'start'});
-              // latch BG + active state
-              setActive(obj.el);
+              setActive(obj.el); setActiveMini(miniMap.get(obj));
               activeBG = obj.color; setBG(obj.color);
+              if (id !== '#home') showRadial(false); // hide radial after choosing a section
             }
           }
         });
       });
 
-      // geometry (full circle on desktop, half arc on mobile)
       function compute(){
         const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
         const isMobile = vw <= 820;
@@ -403,91 +414,106 @@
         const fontSize   = Math.max(14, Math.round(radius * 0.12));
         const linkSize   = Math.max(28, Math.round(radius * 0.25));
 
-        // Spread: 180° half-arc mobile, 330° near-full circle desktop (leave small gap)
+        // Spread: 180° half-arc mobile, 330° desktop (tiny gap)
         const spreadDeg  = isMobile ? 180 : 330;
         const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2);
         const increment  = spreadDeg / (items.length - 1);
 
+        // size ring container
         menu.style.width  = (radius*2) + 'px';
         menu.style.height = (radius*2) + 'px';
-
         ring.style.width       = (radius*2) + 'px';
         ring.style.height      = (radius*2) + 'px';
         ring.style.borderWidth = borderSize + 'px';
 
+        // radial label distance from center (kept just inside ring)
+        const rLabel = radius - (borderSize + Math.max(10, linkSize*0.15));
+        const rHover = radius - (borderSize * 0.5);
+
         items.forEach((obj, i)=>{
           const a = obj.el, hover = obj.hover;
           const deg = startDeg + (i*increment);
+          const baseT = `translate(-50%,-50%) rotate(${deg}deg) translate(${rLabel}px, 0) rotate(${-deg}deg)`;
+          setTransition(a, 'transform .18s ease, color .2s ease, filter .2s ease');
+          a.style.fontSize   = fontSize + 'px';
+          a.style.height     = linkSize + 'px';
+          a.style.lineHeight = linkSize + 'px';
+          setTransform(a, baseT);
+          obj.baseTransform = baseT;
 
-          const padScale = isMobile ? 1.08 : 1.03;
-
-          a.style.paddingLeft = (radius * padScale) + 'px';
-          a.style.fontSize    = fontSize + 'px';
-          a.style.height      = linkSize + 'px';
-          a.style.lineHeight  = linkSize + 'px';
-
-          setTransformOrigin(a, '0px ' + (linkSize * 0.5) + 'px');
-          setTransition(a, 'all 0.2s ease-out');
-          setTransform(a, 'rotate(' + deg + 'deg)');
-
-          const left = borderSize + 'px';
-          const top  = (radius - (linkSize * 0.5)) + 'px';
-          a.style.left = left; a.style.top = top;
-
-          hover.style.left   = left;
-          hover.style.top    = top;
-          hover.style.width  = (radius + (borderSize/2)) + 'px';
+          // hover indicator: radial line aligned to ring
           hover.style.height = linkSize + 'px';
+          hover.style.width  = rHover + 'px';
           hover.style.borderRight = (Math.max(5, Math.round(borderSize * 0.9))) + 'px solid var(--accent)';
-
-          setTransformOrigin(hover, '0px ' + (linkSize * 0.5) + 'px');
-          setTransition(hover, 'all 0.2s ease-out');
-          setTransform(hover, 'rotate(' + deg + 'deg)');
+          const hoverT = `translate(-50%,-50%) rotate(${deg}deg)`;
+          setTransition(hover, 'transform .18s ease, opacity .2s ease');
+          setTransform(hover, hoverT);
+          obj.hoverTransform = hoverT;
         });
       }
 
       function linkOver(e){
-        const a = e.currentTarget;
-        const hover = a.nextElementSibling;
-        const color = a.dataset.color || getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#1F7D53';
-        a.style.paddingLeft = (parseFloat(a.style.paddingLeft) + 10) + 'px';
-        hover.style.opacity = 1;
-        hover.style.borderRightColor = color;
+        const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return;
+        const hover = obj.hover; const color = a.dataset.color || '#1F7D53';
+        setTransform(a, obj.baseTransform + ' translateX(8px)'); // why: nudge along tangent for emphasis
+        hover.style.opacity = 1; hover.style.borderRightColor = color;
         ring.style.borderColor = color;
         ring.style.boxShadow = '0 12px 48px rgba(0,0,0,.45), 0 0 0 10px ' + hexToRgba(color, 0.14);
-        // temporary bg tint while hovering (don’t change active)
         setBG(color);
       }
 
       function linkOut(e){
-        const a = e.currentTarget;
-        const hover = a.nextElementSibling;
-        a.style.paddingLeft = (parseFloat(a.style.paddingLeft) - 10) + 'px';
+        const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return;
+        const hover = obj.hover;
+        setTransform(a, obj.baseTransform);
         hover.style.opacity = 0;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1F7D53';
         ring.style.borderColor = accent;
         ring.style.boxShadow = '0 10px 40px rgba(0,0,0,.35)';
-        // restore background to the active section color
         setBG(activeBG);
       }
 
-      // active state helper
-      function setActive(el){
-        items.forEach(i=>i.el.removeAttribute('aria-current'));
-        if (el) el.setAttribute('aria-current','page');
-      }
+      function setActive(el){ items.forEach(i=>i.el.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
 
-      // FAB toggle (mobile/optional)
       function setCollapsed(val){
         menu.dataset.collapsed = String(val);
         fab.setAttribute('aria-expanded', String(!val));
         fab.textContent = val ? '☰' : '×';
       }
-      let collapsed = false;
-      setCollapsed(collapsed);
+      let collapsed = false; setCollapsed(collapsed);
       fab.addEventListener('click', ()=>{collapsed = !collapsed; setCollapsed(collapsed)});
 
-      // IntersectionObserver to update background & active state by section in view
+      // ------------------------------
+      // Mini (header) nav build + sync
+      // ------------------------------
+      const siteNav = document.getElementById('site-nav');
+      const miniMap = new Map();
+      items.forEach((obj)=>{
+        const a = document.createElement('a');
+        a.href = obj.href; a.textContent = obj.label; a.setAttribute('data-color', obj.color);
+        a.addEventListener('click',(e)=>{
+          const id = a.getAttribute('href');
+          if (id && id.startsWith('#')){
+            const target = document.querySelector(id);
+            if (target){
+              e.preventDefault();
+              target.scrollIntoView({behavior:'smooth', block:'start'});
+              setActiveMini(a);
+              const clr = obj.color; activeBG = clr; setBG(clr);
+            }
+          }
+        });
+        siteNav.appendChild(a);
+        obj.miniEl = a; miniMap.set(obj, a);
+      });
+      function setActiveMini(el){
+        siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current'));
+        if (el) el.setAttribute('aria-current','page');
+      }
+
+      // ------------------------------
+      // IO: update BG + active state
+      // ------------------------------
       let activeBG = '#1F7D53';
       const sections = document.querySelectorAll('main section[id]');
       const io = new IntersectionObserver(entries=>{
@@ -495,11 +521,9 @@
           if (entry.isIntersecting){
             const id  = '#'+entry.target.id;
             const clr = entry.target.getAttribute('data-color') || '#1F7D53';
-            activeBG = clr;
-            setBG(clr);
-            // set menu active
+            activeBG = clr; setBG(clr);
             const match = items.find(i => i.href === id);
-            if (match) setActive(match.el);
+            if (match){ setActive(match.el); setActiveMini(match.miniEl); }
           }
         });
         const nearTop = window.scrollY < 40;
@@ -507,15 +531,26 @@
       }, {root:null, threshold:0.55});
       sections.forEach(sec=>io.observe(sec));
 
-      // initial layout + background + active state
+      // Home observer toggles welcome radial vs mini-nav
+      const home = document.getElementById('home');
+      function showRadial(visible){
+        radialWrap.dataset.visible = String(visible);
+        document.body.classList.toggle('show-mini-nav', !visible);
+      }
+      const ioHome = new IntersectionObserver(([entry])=>{
+        if (!entry) return;
+        const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
+        showRadial(visible);
+      }, {threshold:[0,0.6,1]});
+      if (home) ioHome.observe(home);
+
+      // init
       compute();
       window.addEventListener('resize', compute, {passive:true});
       const first = document.querySelector('main section[data-color]');
       const initialColor = first ? first.getAttribute('data-color') : '#1F7D53';
       activeBG = initialColor; setBG(initialColor);
-      // set Home active by default
-      const homeItem = items.find(i => i.href === '#home');
-      if (homeItem) setActive(homeItem.el);
+      const homeItem = items.find(i => i.href === '#home'); if (homeItem){ setActive(homeItem.el); setActiveMini(homeItem.miniEl); }
     });
   </script>
 </body>
