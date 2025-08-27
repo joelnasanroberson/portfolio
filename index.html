@@ -3,109 +3,217 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Portfolio of Joel N. Roberson — Marketing & Growth Strategist. SEO/SEM, paid media, partnerships, events, and creative production.">
   <title>Joel N. Roberson – Marketing & Growth Strategist</title>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://db.onlinewebfonts.com/c/f2b7f17d01f1f14802062ce0574b4d4a?family=Futura+PT" rel="stylesheet">
-  <style>
-    :root{
-      --dark:#18230F;--accent:#1F7D53;--light:#f9f9f9;--header:'Futura PT',sans-serif;--sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{background:var(--dark);color:var(--light);font-family:var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;text-align:center}
-    header{position:sticky;top:0;z-index:40;padding:.75rem 1rem;background:linear-gradient(180deg,rgba(0,0,0,.32),transparent)}
-    .container{width:min(1120px,92vw);margin-inline:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-    nav{display:flex;gap:.5rem;justify-content:center;margin-top:.5rem;flex-wrap:wrap}
-    nav a{color:var(--light);text-decoration:none;padding:.35rem .6rem;border-radius:8px;font-weight:600}
-    nav a:hover{background:rgba(255,255,255,.03)}
-    section{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:6rem 2rem;text-align:center}
-    .hero{background:linear-gradient(rgba(24,35,15,.6),rgba(24,35,15,.6)),url('https://images.unsplash.com/photo-1529101091764-c3526daf38fe?auto=format&fit=crop&w=1600&q=80');background-size:cover;background-position:center}
-    h1,h2,h3{font-family:var(--header);margin:0}
-    h1{font-size:clamp(2.4rem,6vw,4.2rem);color:var(--accent);letter-spacing:-1px}
-    h2{font-size:clamp(1.25rem,2.5vw,2rem);margin-top:1rem;color:var(--light)}
-    p{max-width:70ch;margin:1rem auto 0;color:rgba(249,249,249,.92);line-height:1.6}
-    .skills-grid,.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:1200px;margin:2rem auto;justify-items:center}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));padding:1.75rem;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.45);transition:transform .36s cubic-bezier(.22,.9,.3,1),box-shadow .36s;max-width:320px}
-    .card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 18px 50px rgba(0,0,0,.55)}
-    .case{background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;padding:3.25rem 1.25rem;border-radius:12px;font-weight:700;font-size:1.4rem;cursor:pointer;transition:transform .36s ease,box-shadow .36s;max-width:320px}
-    .case:hover{transform:scale(1.05);box-shadow:0 18px 50px rgba(31,125,83,.15)}
-    .contact a{display:inline-block;margin-top:1.25rem;padding:.75rem 1.25rem;background:var(--accent);color:#fff;text-decoration:none;border-radius:10px}
-    .contact a:hover{background:#166c44}
-    .cursor{width:18px;height:18px;border:2px solid var(--accent);border-radius:50%;position:fixed;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;z-index:9999;transition:width .18s ease,height .18s ease,background .18s ease,transform .08s ease}
-    .cursor.active{width:44px;height:44px;background:rgba(31,125,83,.14)}
-    @media (max-width:720px){nav{display:none}h1{font-size:2.25rem}.skills-grid,.projects-grid{grid-template-columns:1fr}}
 
-    /* ===== Radial (Circular) Menu — Scoped ===== */
-    #radial-menu-mount{
-      position: fixed;
-      bottom: 22px;
-      right: 22px;
-      z-index: 60;
+  <style>
+    /* ------------------------------
+       THEME TOKENS
+    ------------------------------ */
+    :root{
+      --dark:#18230F;
+      --accent:#1F7D53;
+      --accent-2:#166c44;
+      --light:#f9f9f9;
+      --muted:rgba(249,249,249,.82);
+      --ring: 0 0 0 3px rgba(31,125,83,.35);
+      --shadow-1: 0 8px 30px rgba(0,0,0,.45);
+      --shadow-2: 0 18px 50px rgba(0,0,0,.55);
+      --radius:14px;
+      --header:'Futura PT', sans-serif;
+      --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+      /* Dynamic background color (updated via JS) */
+      --bg: #102015;
     }
-    .radial-menu{
-      position: relative;
-      width: 380px;
-      height: 380px;
-      pointer-events: none;
+
+    /* ------------------------------
+       RESET / BASE
+    ------------------------------ */
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;text-size-adjust:100%}
+    body{
+      margin:0; color:var(--light); font-family:var(--sans);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden; text-align:center; min-height:100%;
+      background:#0b1109;
     }
-    .radial-menu *{ pointer-events: auto; }
-    .radial-menu .rm-circle{
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      border-radius: 999px;
-      border: 3px solid var(--accent);
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-      transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
-      backdrop-filter: blur(2px);
+    img{max-width:100%;display:block}
+    a{color:inherit}
+    :focus-visible{outline:none; box-shadow: var(--ring); border-radius:10px}
+
+    /* Dynamic background layers */
+    .bg{
+      position:fixed; inset:0; z-index:-2;
+      background:
+        radial-gradient(1200px 600px at 50% 20%, color-mix(in oklab, var(--bg) 70%, #000) 18%, transparent 60%),
+        radial-gradient(900px 500px at 90% 80%, color-mix(in oklab, var(--bg) 55%, #000) 12%, transparent 60%),
+        linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, #000), #0b1109 100%);
+      transition: background 450ms ease;
     }
-    .radial-menu a{
-      position: absolute;
-      color: var(--light);
-      text-decoration: none;
-      font-family: var(--header);
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-shadow: 0 2px 10px rgba(0,0,0,.35);
-      will-change: transform;
-      transition: color .2s ease, opacity .2s ease;
-      outline: none;
+    .bg-hero{
+      position:fixed; inset:0; z-index:-1; opacity:.25;
+      background: url('https://images.unsplash.com/photo-1529101091764-c3526daf38fe?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+      mix-blend-mode: lighten;
+      transition: opacity .4s ease;
     }
-    .radial-menu a:focus-visible{
-      color: #fff;
-      box-shadow: 0 0 0 3px rgba(31,125,83,.35);
-      border-radius: 8px;
+
+    /* ------------------------------
+       LAYOUT
+    ------------------------------ */
+    header{
+      position:sticky; top:0; z-index:100; padding:.75rem 1rem;
+      background:linear-gradient(180deg,rgba(0,0,0,.42),transparent);
+      backdrop-filter:saturate(120%) blur(2px);
     }
-    .radial-menu .rm-hover{
-      position: absolute;
-      opacity: 0;
-      height: 2.25rem;
-      border-right: 6px solid var(--accent);
+    .container{
+      width:min(1120px,92vw); margin-inline:auto;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center
+    }
+
+    /* Old nav hidden (radial is centerpiece) */
+    nav{ display:none !important; }
+
+    main{isolation:isolate}
+    section{
+      min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
+      padding:6rem 2rem; text-align:center
+    }
+
+    h1,h2,h3{font-family:var(--header); margin:0}
+    h1{font-size:clamp(2.4rem,6vw,4.2rem); color:var(--accent); letter-spacing:-.5px}
+    h2{font-size:clamp(1.25rem,2.5vw,2rem); margin-top:1rem; color:var(--light)}
+    p{max-width:70ch; margin:1rem auto 0; color:var(--muted); line-height:1.7}
+
+    .skills-grid,.projects-grid{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.5rem;
+      max-width:1200px; margin:2rem auto; justify-items:center
+    }
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      padding:1.75rem; border-radius:var(--radius); box-shadow:var(--shadow-1);
+      transition:transform .36s cubic-bezier(.22,.9,.3,1), box-shadow .36s; max-width:320px
+    }
+    .card:hover{transform:translateY(-8px) scale(1.02); box-shadow:var(--shadow-2)}
+    .case{
+      background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+      padding:3.25rem 1.25rem; border-radius:12px; font-weight:700; font-size:1.2rem; cursor:pointer;
+      transition:transform .3s ease, box-shadow .3s ease; max-width:320px
+    }
+    .case:hover{transform:scale(1.03); box-shadow:0 18px 50px rgba(31,125,83,.22)}
+    .contact a{
+      display:inline-block; margin-top:1.25rem; padding:.75rem 1.25rem; background:var(--accent); color:#fff;
+      text-decoration:none; border-radius:10px; transition: background .2s ease, transform .2s ease
+    }
+    .contact a:hover{background:var(--accent-2); transform: translateY(-1px)}
+
+    /* custom cursor */
+    .cursor{
+      width:18px; height:18px; border:2px solid var(--accent); border-radius:50%;
+      position:fixed; left:0; top:0; transform:translate(-50%,-50%); pointer-events:none; z-index:10999;
+      transition:width .18s ease, height .18s ease, background .18s ease, transform .08s ease
+    }
+    .cursor.active{width:44px; height:44px; background:rgba(31,125,83,.14)}
+
+    /* ------------------------------
+       RADIAL MENU (centerpiece)
+       - Full circle on desktop
+       - Half arc on mobile
+    ------------------------------ */
+    #radial-menu-wrap{
+      position:fixed; inset:0; z-index:10990;
+      display:grid; place-items:center; pointer-events:none;
+    }
+    .radial-menu{ position:relative; width:480px; height:480px; pointer-events:none; }
+    .radial-menu *{ pointer-events:auto; }
+
+    .rm-circle{
+      position:absolute; inset:0; margin:auto; border-radius:999px;
+      border:4px solid var(--accent);
+      box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 60px rgba(31,125,83,.08);
+      transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease, opacity .2s ease;
+      backdrop-filter: blur(3px) saturate(120%);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    }
+
+    .rm-link{
+      position:absolute; color:var(--light); text-decoration:none; font-family:var(--header);
+      font-weight:800; letter-spacing:.04em; text-shadow:0 2px 10px rgba(0,0,0,.35);
+      will-change: transform; transition: color .2s ease, opacity .2s ease, padding-left .2s ease, filter .2s ease;
+      outline:none; filter: drop-shadow(0 6px 20px rgba(0,0,0,.45));
+    }
+    .rm-hover{
+      position:absolute; opacity:0; height:2.35rem; border-right:7px solid var(--accent);
       transition: opacity .2s ease, border-color .2s ease;
     }
-    @media (max-width: 720px){
-      #radial-menu-mount{ bottom: 16px; right: 16px; }
+
+    /* Active state */
+    .rm-link[aria-current="page"]{
+      color:#fff;
+      filter: drop-shadow(0 0 0 rgba(0,0,0,0)) brightness(1.15);
+    }
+    .rm-link[aria-current="page"] + .rm-hover{
+      opacity:1;
+      border-right-color:var(--accent);
+    }
+
+    /* Shrink menu slightly when not at top so content breathes */
+    .shrink .radial-menu{ transform: scale(.9); transition: transform .25s ease }
+
+    /* FAB toggle for small screens */
+    .radial-fab{
+      position:fixed; bottom:18px; right:18px; width:56px; height:56px;
+      border-radius:999px; border:none; background:var(--accent); color:#fff; font-weight:700;
+      display:none; align-items:center; justify-content:center; cursor:pointer;
+      box-shadow:0 8px 28px rgba(0,0,0,.35);
+      transition: transform .2s ease, background .2s ease; z-index:10991;
+    }
+    .radial-fab:hover{ transform: translateY(-1px); background:var(--accent-2) }
+    .radial-fab:focus-visible{ box-shadow: var(--ring) }
+
+    .radial-menu[data-collapsed="true"] .rm-circle,
+    .radial-menu[data-collapsed="true"] .rm-link,
+    .radial-menu[data-collapsed="true"] .rm-hover{ opacity:0; pointer-events:none }
+
+    @media (max-width: 900px){
+      .radial-menu{ width:360px; height:360px }
+    }
+    @media (max-width: 820px){
+      .radial-menu{ width:320px; height:320px }
+      .radial-fab{ display:flex }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{scroll-behavior:auto !important}
+      .card,.case,.cursor{transition:none !important}
     }
   </style>
 </head>
 <body>
-  <header>
+  <!-- dynamic background layers -->
+  <div class="bg" id="bg"></div>
+  <div class="bg-hero" id="bg-hero" aria-hidden="true"></div>
+
+  <header role="banner">
     <div class="container">
-      <div style="display:flex;align-items:center;gap:.75rem"><div style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div><strong style="font-family:var(--header)">Joel N. Roberson</strong></div>
-      <nav aria-label="Primary navigation">
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#experience">Experience</a>
-        <a href="#cases">Case Studies</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div>
+        <strong style="font-family:var(--header)">Joel N. Roberson</strong>
+      </div>
+      <!-- nav intentionally hidden -->
     </div>
   </header>
 
   <div class="cursor" id="custom-cursor" aria-hidden="true"></div>
 
-  <main>
-    <section class="hero" id="home">
+  <main id="main">
+    <section class="hero" id="home" aria-label="Introduction" data-color="#1F7D53">
       <div class="container">
         <h1>Joel N. Roberson</h1>
         <h2>Marketing & Growth Strategist — Bridging creativity with analytics</h2>
@@ -113,16 +221,16 @@
       </div>
     </section>
 
-    <section id="about">
+    <section id="about" aria-labelledby="about-h" data-color="#27ae60">
       <div class="container">
-        <h2>About</h2>
+        <h2 id="about-h">About</h2>
         <p>I'm Joel — a marketing & growth strategist who balances creative production with data-driven systems to deliver measurable results across search, paid media, partnerships, and live events. B.S. IT Management, FSCJ (2018–2022).</p>
       </div>
     </section>
 
-    <section id="skills">
+    <section id="skills" aria-labelledby="skills-h" data-color="#2980b9">
       <div class="container">
-        <h2>Skills</h2>
+        <h2 id="skills-h">Skills</h2>
         <div class="skills-grid">
           <div class="card"><h3>Growth & Digital Strategy</h3><p>SEO/SEM, Google Ads, GA4, funnel optimization, paid media, CRM automation.</p></div>
           <div class="card"><h3>Creative & Brand</h3><p>Adobe Suite, video production, photography, creative direction, web design (Wix/WordPress).</p></div>
@@ -131,9 +239,9 @@
       </div>
     </section>
 
-    <section id="experience">
+    <section id="experience" aria-labelledby="experience-h" data-color="#8e44ad">
       <div class="container">
-        <h2>Experience</h2>
+        <h2 id="experience-h">Experience</h2>
         <div class="skills-grid">
           <div class="card"><h3>Marketing Manager — One on One / Next Level</h3><p>Modernized marketing systems into scalable growth engines, generating $2M+ in under 2 years. Built SEO + Google Ads with geo-targeting and GSC insights. Achieved 8.6× ROAS.</p></div>
           <div class="card"><h3>Social Media Specialist — UMove Marketing</h3><p>Managed 15 accounts (~500k followers). Insight-driven strategies produced up to +315% monthly engagement growth. Video production and live event coverage.</p></div>
@@ -142,191 +250,217 @@
       </div>
     </section>
 
-    <section id="cases">
+    <section id="cases" aria-labelledby="cases-h" data-color="#f39c12">
       <div class="container">
-        <h2>Case Studies</h2>
+        <h2 id="cases-h">Case Studies</h2>
         <div class="projects-grid">
-          <div class="case" tabindex="0">Brand Awareness</div>
-          <div class="case" tabindex="0">Community Growth</div>
-          <div class="case" tabindex="0">Conversion Optimization</div>
-          <div class="case" tabindex="0">Creative Campaigns</div>
+          <button class="case" type="button">Brand Awareness</button>
+          <button class="case" type="button">Community Growth</button>
+          <button class="case" type="button">Conversion Optimization</button>
+          <button class="case" type="button">Creative Campaigns</button>
         </div>
       </div>
     </section>
 
-    <section id="contact">
+    <section id="contact" aria-labelledby="contact-h" data-color="#d35400">
       <div class="container">
-        <h2>Get in touch</h2>
+        <h2 id="contact-h">Get in touch</h2>
         <p>Email: <a href="mailto:joelnasanroberson@gmail.com">joelnasanroberson@gmail.com</a> · Phone: <a href="tel:+19047131424">(904) 713-1424</a></p>
         <div class="contact"><a href="mailto:joelnasanroberson@gmail.com">Contact Me</a></div>
       </div>
     </section>
   </main>
 
-  <!-- CIRCULAR MENU -->
-  <div id="radial-menu-mount" aria-label="Quick actions" role="navigation"></div>
+  <!-- Radial menu centerpiece -->
+  <div id="radial-menu-wrap" role="region" aria-label="Quick actions">
+    <button class="radial-fab" id="radial-fab" aria-controls="radial-menu" aria-expanded="true" title="Toggle quick menu">☰</button>
+    <div id="radial-menu" class="radial-menu" data-collapsed="false">
+      <div class="rm-circle" aria-hidden="true"></div>
+      <!-- Links injected by JS -->
+    </div>
+  </div>
 
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- GSAP (optional, deferred) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
-  <!-- Page animations & custom cursor -->
   <script>
-    if(window.gsap && window.ScrollTrigger){gsap.registerPlugin(ScrollTrigger)}
-    const sections = gsap.utils.toArray('main section');
-    sections.forEach((sec)=>{
-      gsap.fromTo(sec,{scale:.9,opacity:0},{scale:1,opacity:1,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:sec,start:'top 80%',end:'bottom 20%',toggleActions:'play none none reverse'}});
-      ScrollTrigger.create({trigger:sec,start:'top 100%',end:'bottom 0%',onUpdate:self=>{const s = 1 + (self.progress-0.5)*0.1;sec.style.transform = `scale(${s})`;} });
-    });
-    const cursor = document.getElementById('custom-cursor');
-    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
-    if(isTouch){cursor.style.display='none'}else{
-      document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
-      document.querySelectorAll('a,button,.case,.card').forEach(el=>{
-        el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
-        el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+    window.addEventListener('DOMContentLoaded', () => {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ------------------------------
+         Utilities
+      ------------------------------ */
+      function setTransform(el, val){ el.style.transform = val; el.style.webkitTransform = val; }
+      function setTransformOrigin(el, val){ el.style.transformOrigin = val; el.style.webkitTransformOrigin = val; }
+      function setTransition(el, val){ el.style.transition = val; el.style.webkitTransition = val; }
+      function hexToRgba(hex, alpha){
+        let h = hex.replace('#','');
+        if(h.length===3) h = h.split('').map(c=>c+c).join('');
+        const n = parseInt(h,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      /* ------------------------------
+         Dynamic Background Engine
+      ------------------------------ */
+      const bgRoot = document.documentElement;
+      const heroOverlay = document.getElementById('bg-hero');
+      function setBG(color){ bgRoot.style.setProperty('--bg', color); if (heroOverlay) heroOverlay.style.opacity = '.25'; }
+
+      /* ------------------------------
+         GSAP niceties (optional)
+      ------------------------------ */
+      if (!prefersReduced && window.gsap){
+        try{
+          if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+          const sections = document.querySelectorAll('main section');
+          sections.forEach((sec)=>{
+            gsap.fromTo(sec,{scale:.96,opacity:0},{
+              scale:1, opacity:1, duration:1, ease:'power3.out',
+              scrollTrigger: window.ScrollTrigger ? {
+                trigger:sec, start:'top 80%', end:'bottom 20%', toggleActions:'play none none reverse'
+              } : undefined
+            });
+          });
+        }catch(e){}
+      }
+
+      /* ------------------------------
+         Custom cursor
+      ------------------------------ */
+      const cursor = document.getElementById('custom-cursor');
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+      if (isTouch || prefersReduced){
+        if (cursor) cursor.style.display='none';
+      } else if (cursor){
+        document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
+        document.querySelectorAll('a,button,.case,.card').forEach(el=>{
+          el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
+          el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+        });
+      }
+
+      /* ------------------------------
+         RADIAL MENU (centerpiece)
+      ------------------------------ */
+      const menu   = document.getElementById('radial-menu');
+      const ring   = menu.querySelector('.rm-circle');
+      const fab    = document.getElementById('radial-fab');
+
+      // Items also drive background colors
+      const items = [
+        { label:'Home',       href:'#home',       color:'#1F7D53' },
+        { label:'About',      href:'#about',      color:'#27ae60' },
+        { label:'Skills',     href:'#skills',     color:'#2980b9' },
+        { label:'Experience', href:'#experience', color:'#8e44ad' },
+        { label:'Cases',      href:'#cases',      color:'#f39c12' },
+        { label:'Contact',    href:'#contact',    color:'#d35400' }
+      ];
+
+      // Build DOM links
+      items.forEach(obj=>{
+        const a = document.createElement('a');
+        a.className = 'rm-link';
+        a.textContent = obj.label;
+        a.href = obj.href;
+        a.setAttribute('data-color', obj.color);
+        a.setAttribute('role','link');
+        const hover = document.createElement('span');
+        hover.className = 'rm-hover';
+        menu.appendChild(a);
+        menu.appendChild(hover);
+        obj.el = a; obj.hover = hover;
+
+        // interactions
+        a.addEventListener('mouseover', linkOver);
+        a.addEventListener('mouseout', linkOut);
+        a.addEventListener('focus', linkOver);
+        a.addEventListener('blur', linkOut);
+        a.addEventListener('click', (e)=>{
+          const id = a.getAttribute('href');
+          if (id && id.startsWith('#')){
+            const target = document.querySelector(id);
+            if (target){
+              e.preventDefault();
+              target.scrollIntoView({behavior:'smooth', block:'start'});
+              // latch BG + active state
+              setActive(obj.el);
+              activeBG = obj.color; setBG(obj.color);
+            }
+          }
+        });
       });
-    }
-  </script>
 
-  <!-- Radial Menu JS (scoped & themed) -->
-  <script>
-  (function(){
-    const mount = document.getElementById('radial-menu-mount');
-    if(!mount) return;
+      // geometry (full circle on desktop, half arc on mobile)
+      function compute(){
+        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const isMobile = vw <= 820;
 
-    const links = [
-      { label:'About', href:'#about', bg:'#1F7D53' },
-      { label:'Skills', href:'#skills', bg:'#27ae60' },
-      { label:'Experience', href:'#experience', bg:'#2980b9' },
-      { label:'Cases', href:'#cases', bg:'#8e44ad' },
-      { label:'Contact', href:'#contact', bg:'#f39c12' }
-    ];
+        const winH = Math.max(560, Math.min(window.innerHeight || 700, 1400));
+        const radius     = Math.min(isMobile ? 145 : 210, Math.max(120, Math.round(winH * 0.30)));
+        const borderSize = Math.max(4, Math.round(radius * 0.06));
+        const fontSize   = Math.max(14, Math.round(radius * 0.12));
+        const linkSize   = Math.max(28, Math.round(radius * 0.25));
 
-    const menu = document.createElement('div');
-    const circle = document.createElement('div');
-    menu.className = 'radial-menu';
-    circle.className = 'rm-circle';
-    menu.appendChild(circle);
-    mount.appendChild(menu);
+        // Spread: 180° half-arc mobile, 330° full-circle desktop (leave small gap)
+        const spreadDeg  = isMobile ? 180 : 330;
+        const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2); // centered arc vs circle
+        const increment  = spreadDeg / (items.length - 1);
 
-    let winH = window.innerHeight || 700;
-    let radius, borderSize, totalArea, increment, startPoint, fontSize, linkSize;
+        menu.style.width  = (radius*2) + 'px';
+        menu.style.height = (radius*2) + 'px';
 
-    links.forEach(item => {
-      const a = document.createElement('a');
-      const hover = document.createElement('span');
-      hover.className = 'rm-hover';
-      a.href = item.href;
-      a.textContent = item.label;
-      a.dataset.color = item.bg;
+        ring.style.width       = (radius*2) + 'px';
+        ring.style.height      = (radius*2) + 'px';
+        ring.style.borderWidth = borderSize + 'px';
 
-      a.addEventListener('mouseover', linkOver);
-      a.addEventListener('mouseout', linkOut);
-      a.addEventListener('focus', linkOver);
-      a.addEventListener('blur', linkOut);
+        items.forEach((obj, i)=>{
+          const a = obj.el, hover = obj.hover;
+          const deg = startDeg + (i*increment);
 
-      menu.appendChild(a);
-      menu.appendChild(hover);
-      item.elem = a;
-      item.hover = hover;
-    });
+          // For full circle, offset labels slightly so they stay readable
+          const padScale = isMobile ? 1.08 : 1.03;
 
-    function compute(){
-      winH = window.innerHeight || 700;
+          a.style.paddingLeft = (radius * padScale) + 'px';
+          a.style.fontSize    = fontSize + 'px';
+          a.style.height      = linkSize + 'px';
+          a.style.lineHeight  = linkSize + 'px';
 
-      // Size responsive to viewport height
-      radius     = Math.min(180, Math.max(120, Math.round(winH * 0.28)));
-      borderSize = Math.max(3, Math.round(radius * 0.06));
-      totalArea  = 48; // degrees spread for the arc
-      increment  = totalArea / (links.length - 1);
-      startPoint = -(totalArea / 2);
-      fontSize   = Math.max(14, Math.round(radius * 0.12));
-      linkSize   = Math.max(28, Math.round(radius * 0.25));
+          setTransformOrigin(a, '0px ' + (linkSize * 0.5) + 'px');
+          setTransition(a, 'all 0.2s ease-out');
+          setTransform(a, 'rotate(' + deg + 'deg)');
 
-      menu.style.width  = (radius * 2) + 'px';
-      menu.style.height = (radius * 2) + 'px';
+          const left = borderSize + 'px';
+          const top  = (radius - (linkSize * 0.5)) + 'px';
+          a.style.left = left; a.style.top = top;
 
-      circle.style.width       = (radius * 2) + 'px';
-      circle.style.height      = (radius * 2) + 'px';
-      circle.style.borderWidth = borderSize + 'px';
+          hover.style.left   = left;
+          hover.style.top    = top;
+          hover.style.width  = (radius + (borderSize/2)) + 'px';
+          hover.style.height = linkSize + 'px';
+          hover.style.borderRight = (Math.max(5, Math.round(borderSize * 0.9))) + 'px solid var(--accent)';
 
-      links.forEach((item, i) => {
-        const a = item.elem, hover = item.hover;
-        const deg = startPoint + (i * increment);
+          setTransformOrigin(hover, '0px ' + (linkSize * 0.5) + 'px');
+          setTransition(hover, 'all 0.2s ease-out');
+          setTransform(hover, 'rotate(' + deg + 'deg)');
+        });
+      }
 
-        a.style.paddingLeft = (radius * 1.18) + 'px';
-        a.style.fontSize    = fontSize + 'px';
-        a.style.height      = linkSize + 'px';
-        a.style.lineHeight  = linkSize + 'px';
-
-        setTransformOrigin(a, '0px ' + (linkSize * 0.5) + 'px');
-        setTransition(a, 'all 0.2s ease-out');
-        setTransform(a, 'rotate(' + deg + 'deg)');
-
-        a.style.left = borderSize + 'px';
-        a.style.top  = (radius - (linkSize * 0.5)) + 'px';
-
-        hover.style.left       = borderSize + 'px';
-        hover.style.top        = (radius - (linkSize * 0.5)) + 'px';
-        hover.style.width      = (radius + (borderSize / 2)) + 'px';
-        hover.style.height     = linkSize + 'px';
-        hover.style.borderRight = (Math.max(4, Math.round(borderSize * 0.8))) + 'px solid var(--accent)';
-
-        setTransformOrigin(hover, '0px ' + (linkSize * 0.5) + 'px');
-        setTransition(hover, 'all 0.2s ease-out');
-        setTransform(hover, 'rotate(' + deg + 'deg)');
-      });
-    }
-
-    function linkOver(e){
-      const a = e.currentTarget;
-      const hover = a.nextElementSibling;
-      const color = a.dataset.color || getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#1F7D53';
-      a.style.paddingLeft = (radius * 1.24) + 'px';
-      hover.style.opacity = 1;
-      hover.style.borderRightColor = color;
-      circle.style.borderColor = color;
-      circle.style.boxShadow = '0 12px 48px rgba(0,0,0,.45), 0 0 0 6px ' + hexToRgba(color, 0.15);
-    }
-
-    function linkOut(e){
-      const a = e.currentTarget;
-      const hover = a.nextElementSibling;
-      a.style.paddingLeft = (radius * 1.18) + 'px';
-      hover.style.opacity = 0;
-      const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1F7D53';
-      circle.style.borderColor = accent;
-      circle.style.boxShadow = '0 10px 40px rgba(0,0,0,.35)';
-    }
-
-    function onResize(){ compute(); }
-
-    // utils
-    function setTransform(el, val){
-      el.style.transform = val;
-      el.style.webkitTransform = val;
-    }
-    function setTransformOrigin(el, val){
-      el.style.transformOrigin = val;
-      el.style.webkitTransformOrigin = val;
-    }
-    function setTransition(el, val){
-      el.style.transition = val;
-      el.style.webkitTransition = val;
-    }
-    function hexToRgba(hex, alpha){
-      let h = hex.replace('#','');
-      if(h.length === 3){ h = h.split('').map(c=>c+c).join(''); }
-      const bigint = parseInt(h,16);
-      const r = (bigint>>16)&255, g = (bigint>>8)&255, b = bigint&255;
-      return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
-    }
-
-    // init
-    compute();
-    window.addEventListener('resize', onResize, {passive:true});
-  })();
-  </script>
-</body>
-</html>
+      function linkOver(e){
+        const a = e.currentTarget;
+        const hover = a.nextElementSibling;
+        const color = a.dataset.color || getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#1F7D53';
+        a.style.paddingLeft = (parseFloat(a.style.paddingLeft) + 10) + 'px';
+        hover.style.opacity = 1;
+        hover.style.borderRightColor = color;
+        ring.style.borderColor = color;
+        ring.style.boxShadow = '0 12px 48px rgba(0,0,0,.45), 0 0 0 10px ' + hexToRgba(color, 0.14);
+        // temporary bg tint while hovering (don’t change active)
+        setBG(color);
+      }
+      function linkOut(e){
+        const a = e.currentTarget;
+        const hover = a.nextElementSibling;
+        a.style.paddingLeft = (parseFloat(a.style.paddingLeft) - 10) + 'px';
+        hover.style
