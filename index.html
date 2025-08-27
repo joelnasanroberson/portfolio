@@ -1,4 +1,4 @@
-<!-- /index.html (Bauhaus variant) -->
+<!-- /index.html (Bauhaus variant, theme‑reactive background) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +36,9 @@
       --accent-2: #155ab4;
       --ring: 0 0 0 3px rgba(28,126,214,.35);
 
+      /* Theme‑reactive background token */
+      --page-bg: var(--bau-black);
+
       --radius:14px;
       --shadow-1: 0 0 0 rgba(0,0,0,0); /* flat */
       --shadow-2: 0 0 0 rgba(0,0,0,0); /* flat */
@@ -50,7 +53,8 @@
       margin:0; color:var(--text); font-family:var(--sans);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
       overflow-x:hidden; text-align:center; min-height:100%;
-      background: var(--bau-black);
+      background: var(--page-bg);
+      transition: background .35s ease, color .2s ease;
     }
     img{max-width:100%;display:block}
     a{color:inherit}
@@ -120,7 +124,7 @@
     .radial-menu{ position:relative; width:520px; height:520px; pointer-events:none; }
     .radial-menu *{ pointer-events:auto; }
 
-    .rm-circle{ position:absolute; inset:0; margin:auto; border-radius:999px; border:6px solid var(--accent); box-shadow:none; background:transparent; }
+    .rm-circle{ position:absolute; inset:0; margin:auto; border-radius:999px; border:6px solid var(--accent); box-shadow:none; background:transparent; transition: border-color .25s ease; }
 
     .rm-link{ position:absolute; top:50%; left:50%; transform-origin:50% 50%; color:#fff; text-decoration:none; font-family:var(--header); font-weight:900; letter-spacing:.04em; transition: color .2s ease, opacity .2s ease, filter .2s ease, transform .18s ease; outline:none; white-space:nowrap; text-transform:uppercase; }
     .rm-hover{ position:absolute; top:50%; left:50%; opacity:0; height:2.1rem; border-right:6px solid var(--accent); transition: opacity .2s ease, border-color .2s ease, transform .18s ease; transform-origin:0 50%; }
@@ -253,6 +257,37 @@
       function setTransform(el, val){ el.style.transform = val; el.style.webkitTransform = val; }
       function setTransition(el, val){ el.style.transition = val; el.style.webkitTransition = val; }
 
+      /* Color helpers */
+      function hexToRgb(hex){
+        let h = hex.replace('#','');
+        if (h.length === 3) h = h.split('').map(x=>x+x).join('');
+        const num = parseInt(h,16);
+        return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+      }
+      function yiqIsLight(hex){
+        const {r,g,b} = hexToRgb(hex);
+        const yiq = (r*299 + g*587 + b*114) / 1000; // perceptual brightness
+        return yiq > 170; // tuned for readability on yellow
+      }
+      function applyTheme(color){
+        const root = document.documentElement;
+        root.style.setProperty('--page-bg', color);
+        root.style.setProperty('--accent', color);
+        // Adjust text contrast for readability on bright backgrounds
+        const lightBg = yiqIsLight(color);
+        const text = lightBg ? '#0e0e0e' : '#f7f7f7';
+        const textMuted = lightBg ? 'rgba(0,0,0,.72)' : 'rgba(247,247,247,.82)';
+        root.style.setProperty('--text', text);
+        root.style.setProperty('--text-muted', textMuted);
+        // Cursor ring subtle tint (why: keep visual coherence)
+        const ringAlpha = lightBg ? 0.22 : 0.35;
+        const {r,g,b} = hexToRgb(color);
+        root.style.setProperty('--ring', `0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
+        // Update radial ring instantly to the active color
+        const ring = document.querySelector('.rm-circle');
+        if (ring) ring.style.borderColor = color;
+      }
+
       /* Simple entrance on sections (optional) */
       if (!prefersReduced && window.gsap){
         try{
@@ -312,7 +347,9 @@
               e.preventDefault();
               target.scrollIntoView({behavior:'smooth', block:'start'});
               setActive(obj.el); setActiveMini(miniMap.get(obj));
+              applyTheme(obj.color); // theme follows selection
               if (id !== '#home') showRadial(false);
+              history.replaceState(null,'', id);
             }
           }
         });
@@ -370,19 +407,18 @@
       items.forEach((obj)=>{
         const a = document.createElement('a'); a.href = obj.href; a.textContent = obj.label; a.setAttribute('data-color', obj.color);
         a.addEventListener('click',(e)=>{
-          const id = a.getAttribute('href'); if (id && id.startsWith('#')){ const target = document.querySelector(id); if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); setActiveMini(a); } } });
+          const id = a.getAttribute('href'); if (id && id.startsWith('#')){ const target = document.querySelector(id); if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); setActiveMini(a); applyTheme(obj.color); history.replaceState(null,'', id); } } });
         siteNav.appendChild(a); obj.miniEl = a; miniMap.set(obj, a);
       });
       function setActiveMini(el){ siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
 
       // IO for sections
-      let activeBG = '#1C7ED6';
       const sections = document.querySelectorAll('main section[id]');
       const io = new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
           if (entry.isIntersecting){
             const id  = '#'+entry.target.id; const match = items.find(i => i.href === id);
-            if (match){ setActive(match.el); setActiveMini(match.miniEl); activeBG = match.color; }
+            if (match){ setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); }
           }
         });
         const nearTop = window.scrollY < 40; document.body.classList.toggle('shrink', !nearTop);
@@ -397,7 +433,10 @@
 
       // init
       compute(); window.addEventListener('resize', compute, {passive:true});
-      const homeItem = items.find(i => i.href === '#home'); if (homeItem){ setActive(homeItem.el); setActiveMini(homeItem.miniEl); }
+      // Start at hash or Home
+      const startHash = location.hash && items.find(i=>i.href === location.hash);
+      const startItem = startHash || items.find(i => i.href === '#home');
+      if (startItem){ setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color); }
     });
   </script>
 </body>
