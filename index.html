@@ -337,7 +337,7 @@
         document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
         document.querySelectorAll('a,button,.case,.card').forEach(el=>{
           el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
-          el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+        el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
         });
       }
 
@@ -403,9 +403,9 @@
         const fontSize   = Math.max(14, Math.round(radius * 0.12));
         const linkSize   = Math.max(28, Math.round(radius * 0.25));
 
-        // Spread: 180° half-arc mobile, 330° full-circle desktop (leave small gap)
+        // Spread: 180° half-arc mobile, 330° near-full circle desktop (leave small gap)
         const spreadDeg  = isMobile ? 180 : 330;
-        const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2); // centered arc vs circle
+        const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2);
         const increment  = spreadDeg / (items.length - 1);
 
         menu.style.width  = (radius*2) + 'px';
@@ -419,7 +419,6 @@
           const a = obj.el, hover = obj.hover;
           const deg = startDeg + (i*increment);
 
-          // For full circle, offset labels slightly so they stay readable
           const padScale = isMobile ? 1.08 : 1.03;
 
           a.style.paddingLeft = (radius * padScale) + 'px';
@@ -459,8 +458,65 @@
         // temporary bg tint while hovering (don’t change active)
         setBG(color);
       }
+
       function linkOut(e){
         const a = e.currentTarget;
         const hover = a.nextElementSibling;
         a.style.paddingLeft = (parseFloat(a.style.paddingLeft) - 10) + 'px';
-        hover.style
+        hover.style.opacity = 0;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1F7D53';
+        ring.style.borderColor = accent;
+        ring.style.boxShadow = '0 10px 40px rgba(0,0,0,.35)';
+        // restore background to the active section color
+        setBG(activeBG);
+      }
+
+      // active state helper
+      function setActive(el){
+        items.forEach(i=>i.el.removeAttribute('aria-current'));
+        if (el) el.setAttribute('aria-current','page');
+      }
+
+      // FAB toggle (mobile/optional)
+      function setCollapsed(val){
+        menu.dataset.collapsed = String(val);
+        fab.setAttribute('aria-expanded', String(!val));
+        fab.textContent = val ? '☰' : '×';
+      }
+      let collapsed = false;
+      setCollapsed(collapsed);
+      fab.addEventListener('click', ()=>{collapsed = !collapsed; setCollapsed(collapsed)});
+
+      // IntersectionObserver to update background & active state by section in view
+      let activeBG = '#1F7D53';
+      const sections = document.querySelectorAll('main section[id]');
+      const io = new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if (entry.isIntersecting){
+            const id  = '#'+entry.target.id;
+            const clr = entry.target.getAttribute('data-color') || '#1F7D53';
+            activeBG = clr;
+            setBG(clr);
+            // set menu active
+            const match = items.find(i => i.href === id);
+            if (match) setActive(match.el);
+          }
+        });
+        const nearTop = window.scrollY < 40;
+        document.body.classList.toggle('shrink', !nearTop);
+      }, {root:null, threshold:0.55});
+      sections.forEach(sec=>io.observe(sec));
+
+      // initial layout + background + active state
+      compute();
+      window.addEventListener('resize', compute, {passive:true});
+      const first = document.querySelector('main section[data-color]');
+      const initialColor = first ? first.getAttribute('data-color') : '#1F7D53';
+      activeBG = initialColor; setBG(initialColor);
+      // set Home active by default
+      const homeItem = items.find(i => i.href === '#home');
+      if (homeItem) setActive(homeItem.el);
+    });
+  </script>
+</body>
+</html>
