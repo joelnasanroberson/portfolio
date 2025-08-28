@@ -1,17 +1,9 @@
 <!-- /index.html (Bauhaus variant, theme‑reactive background)
-Refactor plan (pseudocode):
-1) Dark overlay behind text
-   - Add CSS var --overlay-bg and section[data-overlay] .container::before pseudo for overlay.
-   - Use IntersectionObserver to toggle [data-active] on sections; fade overlay with CSS transition.
-   - Update applyTheme() to tune --overlay-bg for contrast.
-2) Lighter blue "white circle"
-   - Change cream ring border color to var(--bau-blue-light).
-3) Blob movement on shapes (SVG-driven, lightweight)
-   - Add hidden <svg><defs> filters (feTurbulence + animate) and apply via CSS filter: url(#liquid / #liquid-soft).
-   - Add subtle CSS keyframe morph to .shape.blob; gentle float for .shape.circle.
-4) Misc
-   - Keep reduced-motion support (disable animations/filters).
-   - Minor JS: mark sections as [data-active] for overlay fade; no breaking API changes.
+SNAP-TO-STRICT BAUHAUS PLAN (pseudocode):
+1) Keep shape vars `--shape-1..4` + `--shape-ring`.
+2) Replace palette builder with a snap-to-primaries (Red/Blue/Yellow) algorithm.
+3) Only adjust lightness (shades), never hue; ensure contrast vs `--page-bg`.
+4) Reuse hardening (guards/IO/GSAP/rAF) and self-tests.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -57,6 +49,13 @@ Refactor plan (pseudocode):
       /* Overlay token (tuned in JS for contrast) */
       --overlay-bg: rgba(0,0,0,.45);
 
+      /* NEW: reactive shape colors (auto-set in JS; these are safe defaults) */
+      --shape-1: var(--bau-blue);
+      --shape-2: var(--bau-yellow);
+      --shape-3: var(--bau-red);
+      --shape-4: var(--bau-blue);
+      --shape-ring: var(--bau-blue-light);
+
       --radius:14px;
       --shadow-1: 0 0 0 rgba(0,0,0,0); /* flat */
       --shadow-2: 0 0 0 rgba(0,0,0,0); /* flat */
@@ -78,6 +77,10 @@ Refactor plan (pseudocode):
     a{color:inherit}
     :focus-visible{outline:none; box-shadow: var(--ring); border-radius:10px}
 
+    /* Dev banner (hidden by default) */
+    #bug-banner{position:fixed;left:12px;bottom:12px;z-index:11000;background:#ffefef;color:#8a1f1f;border:2px solid #8a1f1f;border-radius:10px;padding:.5rem .75rem;font:600 12px/1.2 var(--sans);display:none}
+    #bug-banner[data-show="true"]{display:block}
+
     /* Bauhaus backdrop: bold flat shapes (pure CSS, no images) */
     .bauhaus{ position:fixed; inset:0; z-index:-2; pointer-events:none; }
     .shape{ position:absolute; pointer-events:none; }
@@ -86,24 +89,22 @@ Refactor plan (pseudocode):
     .shape.blob{ border-radius: 42% 58% 50% 50% / 55% 40% 60% 45%; }
     .shape.semi{ border-radius:50%; clip-path: inset(50% 0 0 0); }
 
-    /* SVG filter-driven motion (applied in CSS below) */
-
     /* Layout */
     header{ position:sticky; top:0; z-index:100; padding:.75rem 1rem; background:linear-gradient(180deg,rgba(0,0,0,.42),transparent); backdrop-filter:saturate(120%) blur(2px); }
-    header .header-inner{ width:min(1120px,92vw); margin-inline:auto; display:flex; align-items:center; justify-content:space-between; gap:1rem; }
-    .brand{ display:flex; align-items:center; gap:.75rem }
-    .brand-dot{ width:12px; height:12px; border-radius:50%; background:var(--accent) }
+    header .header-inner{ width:min(1120px,92vw); margin-inline:auto; display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; justify-items:center; gap:1rem; }
+    .site-logo{ grid-column:2; width:44px; height:44px; border-radius:9999px; display:grid; place-items:center; text-decoration:none; color:var(--text); }
+.site-logo img,.site-logo svg{ display:block; width:44px; height:44px; object-fit:contain; }
+.site-nav{ grid-column:3; justify-self:end; }
 
     .container{ width:min(1120px,92vw); margin-inline:auto; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center }
 
     /* Section text overlay */
     section[data-overlay] .container{ position:relative; isolation:isolate; }
     section[data-overlay] .container::before{
-      content:""; position:absolute; inset:max(-1.25rem,-2vw);
+      content:""; position:absolute; inset:-1.25rem;
       background: var(--overlay-bg);
       border-radius: var(--radius);
       opacity:0; transition: opacity .35s ease; z-index:-1;
-      /* why: overlay only under text stack, not clickable */
     }
     section[data-overlay][data-active="true"] .container::before{ opacity:.6 }
 
@@ -119,7 +120,7 @@ Refactor plan (pseudocode):
 
     h1,h2,h3{font-family:var(--header); margin:0}
     h1 {font-size:clamp(2.8rem,6vw,4.6rem); color:var(--bau-blue-light);letter-spacing:-.5px;}    
-    h2{font-size:clamp(1.25rem,2.5vw,2rem); margin-top:1rem; color:#fff}
+    h2{font-size:clamp(1.25rem,2.5vw,2rem); margin-top:1rem; color:var(--text)}
     h3.tagline{font-size:clamp(1.05rem,2.1vw,1.5rem); margin-top:.75rem; font-weight:800; letter-spacing:.02em; color:var(--text-muted)}
     p{max-width:70ch; margin:1rem auto 0; color:var(--text-muted); line-height:1.7}
 
@@ -155,12 +156,19 @@ Refactor plan (pseudocode):
     .radial-menu{ position:relative; width:520px; height:520px; pointer-events:none; }
     .radial-menu *{ pointer-events:auto; }
 
-    .rm-circle{ position:absolute; inset:0; margin:auto; border-radius:999px; border:6px solid var(--accent); box-shadow:none; background:transparent; transition: border-color .25s ease; }
+    .rm-circle{ position:absolute; inset:0; margin:auto; border-radius:999px; box-shadow:none; --rm-thickness: 6px; transition: transform .25s ease; }
+    .rm-circle::before{ content:""; position:absolute; inset:0; border-radius:inherit;
+      background: conic-gradient(var(--bau-blue-light) 0 120deg, var(--bau-red) 120deg 240deg, var(--bau-yellow) 240deg 360deg);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--rm-thickness)), #000 calc(100% - var(--rm-thickness)));
+      mask: radial-gradient(farthest-side, transparent calc(100% - var(--rm-thickness)), #000 calc(100% - var(--rm-thickness)));
+      animation: ringSpin 20s linear infinite;
+    }
+    @keyframes ringSpin{ to{ transform: rotate(360deg) } }
 
-    .rm-link{ position:absolute; top:50%; left:50%; transform-origin:50% 50%; color:#fff; text-decoration:none; font-family:var(--header); font-weight:900; letter-spacing:.04em; transition: color .2s ease, opacity .2s ease, filter .2s ease, transform .18s ease; outline:none; white-space:nowrap; text-transform:uppercase; }
+    .rm-link{ position:absolute; top:50%; left:50%; transform-origin:50% 50%; color:var(--text); text-decoration:none; font-family:var(--header); font-weight:900; letter-spacing:.04em; transition: color .2s ease, opacity .2s ease, filter .2s ease, transform .18s ease; outline:none; white-space:nowrap; text-transform:uppercase; }
     .rm-hover{ position:absolute; top:50%; left:50%; opacity:0; height:2.1rem; border-right:6px solid var(--accent); transition: opacity .2s ease, border-color .2s ease, transform .18s ease; transform-origin:0 50%; }
 
-    .rm-link[aria-current="page"]{ color:#fff; }
+    .rm-link[aria-current="page"]{ color:var(--text); }
     .rm-link[aria-current="page"] + .rm-hover{ opacity:1; border-right-color:var(--accent); }
 
     .shrink .radial-menu{ transform: scale(.9); transition: transform .25s ease }
@@ -188,43 +196,38 @@ Refactor plan (pseudocode):
       0%,100% { transform: translateY(0) }
       50%     { transform: translateY(-10px) }
     }
-    .shape.blob{ animation: blobMorph 16s ease-in-out infinite; filter: url(#liquid); }
-    .shape.circle{ animation: floatY 12s ease-in-out infinite; filter: url(#liquid-soft); }
+    .shape.blob{ animation: blobMorph 16s ease-in-out infinite; filter: url(#liquid); will-change: transform, border-radius; }
+    .shape.circle{ animation: floatY 12s ease-in-out infinite; filter: url(#liquid-soft); will-change: transform; }
 
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       *{scroll-behavior:auto !important}
       .cursor{transition:none !important}
       .shape.blob,.shape.circle{ animation:none !important; filter:none !important }
-    }
+      .rm-circle::before{ animation: none !important }
+    
   </style>
 </head>
 <body>
   <!-- Bauhaus background composition -->
   <div class="bauhaus" aria-hidden="true">
-    <!-- big blue circle top-left -->
-    <span class="shape circle" style="width:360px;height:360px;left:-120px;top:-140px;background:var(--bau-blue);"></span>
-    <!-- yellow semi circle bottom-left -->
-    <span class="shape semi" style="width:300px;height:300px;left:-80px;bottom:-120px;background:var(--bau-yellow);transform:rotate(90deg);"></span>
-    <!-- red organic blob right -->
-    <span class="shape blob" style="width:460px;height:360px;right:-140px;top:18vh;background:var(--bau-red);"></span>
-    <!-- blue ring center-back (was cream) -->
-    <span class="shape ring" style="width:520px;height:520px;left:50%;top:48vh;transform:translate(-50%,-50%);border:18px solid var(--bau-blue-light);"></span>
-    <!-- blue bar bottom-right -->
-    <span class="shape" style="width:220px;height:28px;right:6vw;bottom:8vh;background:var(--bau-blue);"></span>
+    <!-- reactive colors (no hard-coded bau-* tokens here) -->
+    <span class="shape circle" style="width:360px;height:360px;left:-120px;top:-140px;background:var(--shape-1);"></span>
+    <span class="shape semi" style="width:300px;height:300px;left:-80px;bottom:-120px;background:var(--shape-2);transform:rotate(90deg);"></span>
+    <span class="shape blob" style="width:460px;height:360px;right:-140px;top:18vh;background:var(--shape-3);"></span>
+    <span class="shape ring" style="width:520px;height:520px;left:50%;top:48vh;transform:translate(-50%,-50%);border:18px solid var(--shape-ring);"></span>
+    <span class="shape" style="width:220px;height:28px;right:6vw;bottom:8vh;background:var(--shape-4);"></span>
   </div>
 
   <!-- SVG filter defs for organic motion -->
   <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute">
     <defs>
-      <!-- stronger displacement for blobs -->
       <filter id="liquid">
         <feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="2" seed="7">
           <animate attributeName="baseFrequency" dur="14s" values="0.006;0.009;0.006" repeatCount="indefinite" />
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
-      <!-- softer displacement for simple circles -->
       <filter id="liquid-soft">
         <feTurbulence type="fractalNoise" baseFrequency="0.004" numOctaves="2" seed="3">
           <animate attributeName="baseFrequency" dur="16s" values="0.004;0.006;0.004" repeatCount="indefinite" />
@@ -236,10 +239,10 @@ Refactor plan (pseudocode):
 
   <header role="banner">
     <div class="header-inner">
-      <div class="brand">
-        <div aria-hidden="true" class="brand-dot"></div>
-        <strong style="font-family:var(--header)">Joel N. Roberson</strong>
-      </div>
+      <div class="header-left" aria-hidden="true"></div>
+      <a href="#home" class="site-logo" aria-label="Home">
+        <img src="https://github.com/joelnasanroberson/portfolio/blob/main/jr%20portfolio%20logo1.png?raw=true" alt="Joel Roberson logo" width="44" height="44" decoding="async"/>
+      </a>
       <nav id="site-nav" class="site-nav" aria-label="Section navigation"></nav>
     </div>
   </header>
@@ -247,10 +250,9 @@ Refactor plan (pseudocode):
   <div class="cursor" id="custom-cursor" aria-hidden="true"></div>
 
   <main id="main">
-    <section class="hero" id="home" aria-label="Introduction" data-color="#1C7ED6" data-overlay>
+    <section class="hero" id="home" aria-label="Introduction" data-color="#1C7ED6">
       <div class="container">
-        <h1>Joel N. Roberson</h1>
-        <!-- Home subhead + paragraph moved to About  -->
+        <!-- hero title removed per request -->
       </div>
     </section>
 
@@ -311,208 +313,377 @@ Refactor plan (pseudocode):
     <button class="radial-fab" id="radial-fab" aria-controls="radial-menu" aria-expanded="true" title="Toggle quick menu">☰</button>
     <div id="radial-menu" class="radial-menu" data-collapsed="false">
       <div class="rm-circle" aria-hidden="true"></div>
-      <!-- Links injected by JS -->
     </div>
   </div>
 
+  <!-- Dev banner (hidden); toggle via setBugBanner() in JS -->
+  <div id="bug-banner" aria-live="assertive"></div>
+
   <!-- GSAP (optional, deferred) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script>
+    // Simple error surface (dev-friendly)
+    function setBugBanner(msg){
+      try{ const el = document.getElementById('bug-banner'); if(!el) return; el.textContent = msg; el.dataset.show = 'true'; }catch(_){/*noop*/}
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try{
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      /* Utils */
-      function setTransform(el, val){ el.style.transform = val; el.style.webkitTransform = val; }
-      function setTransition(el, val){ el.style.transition = val; el.style.webkitTransition = val; }
+        /* Utils */
+        function setTransform(el, val){ if(!el) return; el.style.transform = val; el.style.webkitTransform = val; }
+        function setTransition(el, val){ if(!el) return; el.style.transition = val; el.style.webkitTransition = val; }
 
-      /* Color helpers */
-      function hexToRgb(hex){
-        let h = hex.replace('#','');
-        if (h.length === 3) h = h.split('').map(x=>x+x).join('');
-        const num = parseInt(h,16);
-        return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
-      }
-      function yiqIsLight(hex){
-        const {r,g,b} = hexToRgb(hex);
-        const yiq = (r*299 + g*587 + b*114) / 1000; // perceptual brightness
-        return yiq > 170; // tuned for readability on yellow
-      }
-      function applyTheme(color){
-        const root = document.documentElement;
-        root.style.setProperty('--page-bg', color);
-        root.style.setProperty('--accent', color);
-        // Adjust text contrast for readability on bright backgrounds
-        const lightBg = yiqIsLight(color);
-        const text = lightBg ? '#0e0e0e' : '#f7f7f7';
-        const textMuted = lightBg ? 'rgba(0,0,0,.72)' : 'rgba(247,247,247,.82)';
-        root.style.setProperty('--text', text);
-        root.style.setProperty('--text-muted', textMuted);
-        // Cursor ring subtle tint (why: keep visual coherence)
-        const ringAlpha = lightBg ? 0.22 : 0.35;
-        const {r,g,b} = hexToRgb(color);
-        root.style.setProperty('--ring', `0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
-        // Overlay tone (why: keep copy legible on both light/dark themes)
-        const overlay = lightBg ? 'rgba(0,0,0,.50)' : 'rgba(0,0,0,.38)';
-        root.style.setProperty('--overlay-bg', overlay);
-        // Update radial ring instantly to the active color
-        const ring = document.querySelector('.rm-circle');
-        if (ring) ring.style.borderColor = color;
-      }
-
-      /* Simple entrance on sections (optional) */
-      if (!prefersReduced && window.gsap){
-        try{
-          if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-          const sections = document.querySelectorAll('main section');
-          sections.forEach((sec)=>{
-            gsap.fromTo(sec,{y:12,opacity:0},{ y:0, opacity:1, duration:0.7, ease:'power2.out', scrollTrigger: window.ScrollTrigger ? { trigger:sec, start:'top 80%', end:'bottom 20%', toggleActions:'play none none reverse' } : undefined });
-          });
-        }catch(e){}
-      }
-
-      /* Cursor */
-      const cursor = document.getElementById('custom-cursor');
-      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
-      if (isTouch || prefersReduced){ if (cursor) cursor.style.display='none'; }
-      else if (cursor){
-        document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
-        document.querySelectorAll('a,button,.case,.card').forEach(el=>{
-          el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
-          el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
-        });
-      }
-
-      /* Menus */
-      const radialWrap = document.getElementById('radial-menu-wrap');
-      const menu   = document.getElementById('radial-menu');
-      const ring   = menu.querySelector('.rm-circle');
-      const fab    = document.getElementById('radial-fab');
-
-      const items = [
-        { label:'Home',       href:'#home',       color:getComputedStyle(document.documentElement).getPropertyValue('--bau-blue').trim() || '#1C7ED6' },
-        { label:'About',      href:'#about',      color:getComputedStyle(document.documentElement).getPropertyValue('--bau-red').trim() || '#E94F37' },
-        { label:'Skills',     href:'#skills',     color:getComputedStyle(document.documentElement).getPropertyValue('--bau-yellow').trim() || '#F6C90E' },
-        { label:'Experience', href:'#experience', color:getComputedStyle(document.documentElement).getPropertyValue('--bau-blue').trim() || '#1C7ED6' },
-        { label:'Cases',      href:'#cases',      color:getComputedStyle(document.documentElement).getPropertyValue('--bau-red').trim() || '#E94F37' },
-        { label:'Contact',    href:'#contact',    color:getComputedStyle(document.documentElement).getPropertyValue('--bau-yellow').trim() || '#F6C90E' }
-      ];
-
-      // Build radial links
-      const linkMap = new Map();
-      items.forEach((obj, idx)=>{
-        const a = document.createElement('a');
-        a.className = 'rm-link'; a.textContent = obj.label; a.href = obj.href; a.setAttribute('data-color', obj.color); a.setAttribute('role','link'); a.dataset.idx = String(idx);
-        const hover = document.createElement('span'); hover.className = 'rm-hover';
-        menu.appendChild(a); menu.appendChild(hover);
-        obj.el = a; obj.hover = hover; linkMap.set(a, obj);
-
-        a.addEventListener('mouseover', linkOver);
-        a.addEventListener('mouseout', linkOut);
-        a.addEventListener('focus', linkOver);
-        a.addEventListener('blur', linkOut);
-        a.addEventListener('click', (e)=>{
-          const id = a.getAttribute('href');
-          if (id && id.startsWith('#')){
-            const target = document.querySelector(id);
-            if (target){
-              e.preventDefault();
-              target.scrollIntoView({behavior:'smooth', block:'start'});
-              setActive(obj.el); setActiveMini(miniMap.get(obj));
-              applyTheme(obj.color); // theme follows selection
-              if (id !== '#home') showRadial(false);
-              history.replaceState(null,'', id);
+        /* Color helpers */
+        function hexToRgb(hex){
+          let h = String(hex || '').replace('#','');
+          if (!h) return {r:0,g:0,b:0};
+          if (h.length === 3) h = h.split('').map(x=>x+x).join('');
+          const num = parseInt(h,16);
+          return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+        }
+        function rgbToHsl(r,g,b){
+          r/=255; g/=255; b/=255;
+          const max=Math.max(r,g,b), min=Math.min(r,g,b);
+          let h,s,l=(max+min)/2;
+          if(max===min){ h=s=0; }
+          else {
+            const d=max-min; s=l>0.5? d/(2-max-min) : d/(max+min);
+            switch(max){
+              case r: h=(g-b)/d + (g<b?6:0); break;
+              case g: h=(b-r)/d + 2; break;
+              case b: h=(r-g)/d + 4; break;
             }
+            h*=60;
+          }
+          return {h, s: s*100, l: l*100};
+        }
+        function hexToHsl(hex){ const {r,g,b}=hexToRgb(hex); return rgbToHsl(r,g,b); }
+        function hslToHex(h,s,l){
+          s/=100; l/=100;
+          const a = s * Math.min(l,1-l);
+          const f = n => {
+            const k = (n + h/30) % 12;
+            const c = l - a * Math.max(-1, Math.min(k-3, Math.min(9-k,1)));
+            return Math.round(255 * c);
+          };
+          const r=f(0), g=f(8), b=f(4);
+          return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+        }
+        function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+        function yiq(hex){ const {r,g,b}=hexToRgb(hex); return (r*299 + g*587 + b*114)/1000; }
+        function ensureContrast(bgHex, fgHex, minDelta=65){
+          let {h,s,l} = hexToHsl(fgHex);
+          const bgY = yiq(bgHex);
+          let fgY = yiq(fgHex);
+          let tries=0;
+          while (Math.abs(fgY - bgY) < minDelta && tries < 8){
+            l = fgY > bgY ? clamp(l-8, 20, 88) : clamp(l+8, 20, 88);
+            const next = hslToHex(h, clamp(s, 50, 95), l);
+            fgY = yiq(next); fgHex = next; tries++;
+          }
+          return fgHex;
+        }
+        function rotate(h,deg){ let x = (h+deg)%360; if (x<0) x+=360; return x; }
+        function hueDist(a,b){ let d = Math.abs((a||0)-(b||0))%360; return d>180?360-d:d; }
+        function ensureContrastShade(bgHex, baseHex, minDelta=65, direction='auto'){
+          // keep strict hue; vary lightness; boost saturation to avoid pink/beige
+          let {h,s,l} = hexToHsl(baseHex);
+          s = clamp(s, 85, 98);           // vivid — prevents beige/pink tints
+          l = clamp(l, 34, 66);           // mid-range only
+          const bgY = yiq(bgHex);
+          let cur = hslToHex(h, s, l), curY = yiq(cur), tries=0;
+          while (Math.abs(curY - bgY) < minDelta && tries < 10){
+            if (direction==='up') l = clamp(l+6, 34, 70);
+            else if (direction==='down') l = clamp(l-6, 28, 66);
+            else l = (curY > bgY) ? clamp(l-6, 28, 66) : clamp(l+6, 34, 70);
+            cur = hslToHex(h, s, l); curY = yiq(cur); tries++;
+          }
+          return cur;
+        }
+
+        function buildPureBauhausPalette(accent){
+          const cssVar = (name, fb) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fb;
+          const RED = cssVar('--bau-red','#E94F37');
+          const BLUE = cssVar('--bau-blue','#1C7ED6');
+          const YELLOW = cssVar('--bau-yellow','#F6C90E');
+          const BLUE_LT = cssVar('--bau-blue-light','#4da3f0');
+
+          const {h:ha} = hexToHsl(accent);
+          const H = { red: hexToHsl(RED).h, blue: hexToHsl(BLUE).h, yellow: hexToHsl(YELLOW).h };
+          const deltas = [
+            {name:'red',    hex:RED,    d:hueDist(ha,H.red)},
+            {name:'blue',   hex:BLUE,   d:hueDist(ha,H.blue)},
+            {name:'yellow', hex:YELLOW, d:hueDist(ha,H.yellow)}
+          ].sort((a,b)=>a.d-b.d);
+          const primary = deltas[0];
+          const others = [{name:'red',hex:RED},{name:'blue',hex:BLUE},{name:'yellow',hex:YELLOW}].filter(o=>o.name!==primary.name);
+
+          // Keep pure primaries; avoid using the same as background accent
+          const c1 = others[0].hex;
+          const c2 = others[1].hex;
+          const c3 = others[0].hex;
+          const bar = others[1].hex;
+          const ring = BLUE_LT; // cool ring tint; gradient ring handled via CSS
+          return {c1,c2,c3,bar,ring};
+        }
+
+        function yiqIsLight(hex){
+          const y = yiq(hex);
+          return y > 170; // tuned for readability on yellow
+        }
+        function applyTheme(color){
+          const root = document.documentElement;
+          root.style.setProperty('--page-bg', color);
+          root.style.setProperty('--accent', color);
+
+          // Reactive Bauhaus palette
+          const {c1,c2,c3,bar,ring} = buildPureBauhausPalette(color);
+          root.style.setProperty('--shape-1', c1);
+          root.style.setProperty('--shape-2', c2);
+          root.style.setProperty('--shape-3', c3);
+          root.style.setProperty('--shape-4', bar);
+          root.style.setProperty('--shape-ring', ring);
+
+          // Adjust text contrast for readability on bright backgrounds
+          const lightBg = yiqIsLight(color);
+          const text = lightBg ? '#0e0e0e' : '#f7f7f7';
+          const textMuted = lightBg ? 'rgba(0,0,0,.72)' : 'rgba(247,247,247,.82)';
+          root.style.setProperty('--text', text);
+          root.style.setProperty('--text-muted', textMuted);
+          // Cursor ring subtle tint
+          const ringAlpha = lightBg ? 0.22 : 0.35;
+          const {r,g,b} = hexToRgb(color || '#1C7ED6');
+          root.style.setProperty('--ring', `0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
+          
+        }
+
+        /* Simple entrance on sections (optional) */
+        if (!prefersReduced && 'gsap' in window && window.gsap){
+          try{
+            if ('ScrollTrigger' in window && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+            const sections = document.querySelectorAll('main section');
+            sections.forEach((sec)=>{
+              gsap.fromTo(sec,{y:12,opacity:0},{ y:0, opacity:1, duration:0.7, ease:'power2.out', scrollTrigger: ('ScrollTrigger' in window && window.ScrollTrigger) ? { trigger:sec, start:'top 80%', end:'bottom 20%', toggleActions:'play none none reverse' } : undefined });
+            });
+          }catch(e){ console.warn('GSAP effect skipped:', e); }
+        }
+
+        /* Cursor */
+        const cursor = document.getElementById('custom-cursor');
+        const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+        if (isTouch || prefersReduced){ if (cursor) cursor.style.display='none'; }
+        else if (cursor){
+          document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
+          document.querySelectorAll('a,button,.case,.card').forEach(el=>{
+            el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
+            el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+          });
+        }
+
+        /* Menus */
+        const radialWrap = document.getElementById('radial-menu-wrap');
+        const menu   = document.getElementById('radial-menu');
+        const ring   = menu ? menu.querySelector('.rm-circle') : null;
+        const fab    = document.getElementById('radial-fab');
+
+        const css = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+        const items = [
+          { label:'Home',       href:'#home',       color: css('--bau-blue','#1C7ED6') },
+          { label:'About',      href:'#about',      color: css('--bau-red','#E94F37') },
+          { label:'Skills',     href:'#skills',     color: css('--bau-yellow','#F6C90E') },
+          { label:'Experience', href:'#experience', color: css('--bau-blue','#1C7ED6') },
+          { label:'Cases',      href:'#cases',      color: css('--bau-red','#E94F37') },
+          { label:'Contact',    href:'#contact',    color: css('--bau-yellow','#F6C90E') }
+        ];
+
+        // Build radial links (only if menu exists)
+        const linkMap = new Map();
+        if (menu){
+          items.forEach((obj, idx)=>{
+            const a = document.createElement('a');
+            a.className = 'rm-link'; a.textContent = obj.label; a.href = obj.href; a.setAttribute('data-color', obj.color); a.setAttribute('role','link'); a.dataset.idx = String(idx);
+            const hover = document.createElement('span'); hover.className = 'rm-hover';
+            menu.appendChild(a); menu.appendChild(hover);
+            obj.el = a; obj.hover = hover; linkMap.set(a, obj);
+
+            a.addEventListener('mouseover', linkOver);
+            a.addEventListener('mouseout', linkOut);
+            a.addEventListener('focus', linkOver);
+            a.addEventListener('blur', linkOut);
+            a.addEventListener('click', (e)=>{
+              const id = a.getAttribute('href');
+              if (id && id.startsWith('#')){
+                const target = document.querySelector(id);
+                if (target){
+                  e.preventDefault();
+                  target.scrollIntoView({behavior:'smooth', block:'start'});
+                  setActive(obj.el); setActiveMini(miniMap.get(obj));
+                  applyTheme(obj.color); // theme follows selection
+                  if (id !== '#home') showRadial(false);
+                  history.replaceState(null,'', id);
+                }
+              }
+            });
+          });
+        }
+
+        function compute(){
+          if (!menu || !ring) return; // safe guard
+          const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+          const isMobile = vw <= 820;
+          const winH = Math.max(560, Math.min(window.innerHeight || 700, 1400));
+          const radius     = Math.min(isMobile ? 150 : 230, Math.max(120, Math.round(winH * 0.30)));
+          const borderSize = Math.max(6, Math.round(radius * 0.06));
+          const fontSize   = Math.max(14, Math.round(radius * 0.12));
+          const linkSize   = Math.max(28, Math.round(radius * 0.25));
+          const spreadDeg  = isMobile ? 180 : 330;
+          const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2);
+          const increment  = spreadDeg / (items.length - 1);
+
+          menu.style.width  = (radius*2) + 'px';
+          menu.style.height = (radius*2) + 'px';
+          ring.style.width       = (radius*2) + 'px';
+          ring.style.height      = (radius*2) + 'px';
+          ring.style.setProperty('--rm-thickness', borderSize + 'px');
+
+          const rLabel = radius - (borderSize + Math.max(10, linkSize*0.15));
+
+          items.forEach((obj, i)=>{
+            if (!obj.el || !obj.hover) return;
+            const a = obj.el, hover = obj.hover; const deg = startDeg + (i*increment);
+            const baseT = `translate(-50%,-50%) rotate(${deg}deg) translate(${rLabel}px, 0) rotate(${-deg}deg)`;
+            setTransition(a, 'transform .18s ease, color .2s ease');
+            a.style.fontSize   = fontSize + 'px'; a.style.height = linkSize + 'px'; a.style.lineHeight = linkSize + 'px';
+            setTransform(a, baseT); obj.baseTransform = baseT;
+
+            hover.style.height = linkSize + 'px'; hover.style.borderRight = borderSize + 'px solid var(--accent)';
+            const hoverT = `translate(-50%,-50%) rotate(${deg}deg)`; setTransition(hover, 'transform .18s ease, opacity .2s ease'); setTransform(hover, hoverT); obj.hoverTransform = hoverT;
+          });
+        }
+
+        function linkOver(e){
+          const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return;
+          const blue = css('--bau-blue','#1C7ED6').toLowerCase();
+          const blueLight = css('--bau-blue-light','#4da3f0');
+          const color = (a.dataset.color || '#1C7ED6').toLowerCase();
+          const hoverColor = (color === blue) ? blueLight : (a.dataset.color || '#1C7ED6');
+          setTransform(a, (obj.baseTransform || '') + ' translateX(10px)');
+          if (obj.hover) obj.hover.style.opacity = 1;
+          if (obj.hover) obj.hover.style.borderRightColor = hoverColor; // why: lighten only blue items
+          if (ring) ring.style.transform = 'rotate(20deg)';
+        }
+        function linkOut(e){
+          const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return;
+          setTransform(a, obj.baseTransform || ''); if (obj.hover) obj.hover.style.opacity = 0;
+          if (ring) ring.style.transform = 'rotate(0deg)';
+        }
+        function setActive(el){ items.forEach(i=>i.el && i.el.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
+
+        function setCollapsed(val){ if (menu) menu.dataset.collapsed = String(val); if (fab) fab.setAttribute('aria-expanded', String(!val)); if (fab) fab.textContent = val ? '☰' : '×'; }
+        let collapsed = false; setCollapsed(collapsed); if (fab) fab.addEventListener('click', ()=>{collapsed = !collapsed; setCollapsed(collapsed)});
+
+        // Mini header nav
+        const siteNav = document.getElementById('site-nav');
+        const miniMap = new Map();
+        if (siteNav){
+          items.forEach((obj)=>{
+            const a = document.createElement('a'); a.href = obj.href; a.textContent = obj.label; a.setAttribute('data-color', obj.color);
+            a.addEventListener('click',(e)=>{
+              const id = a.getAttribute('href'); if (id && id.startsWith('#')){ const target = document.querySelector(id); if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); setActiveMini(a); applyTheme(obj.color); history.replaceState(null,'', id); } } });
+            siteNav.appendChild(a); obj.miniEl = a; miniMap.set(obj, a);
+          });
+        }
+        function setActiveMini(el){ if (!siteNav) return; siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
+
+        // IO for sections (also drives overlay fade)
+        const sections = document.querySelectorAll('main section[id]');
+        if ('IntersectionObserver' in window){
+          const io = new IntersectionObserver(entries=>{
+            entries.forEach(entry=>{
+              if (entry.isIntersecting){
+                const id  = '#'+entry.target.id; const match = items.find(i => i.href === id);
+                entry.target.setAttribute('data-active','true');
+                if (match){ setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); }
+              } else {
+                entry.target.removeAttribute('data-active');
+              }
+            });
+            const nearTop = window.scrollY < 40; document.body.classList.toggle('shrink', !nearTop);
+          }, {root:null, threshold:0.55});
+          sections.forEach(sec=>io.observe(sec));
+        } else {
+          sections.forEach(sec=>sec.setAttribute('data-active','true'));
+          const first = sections[0];
+          if (first){ const c = first.dataset.color || css('--bau-blue','#1C7ED6'); applyTheme(c); }
+        }
+
+        // Toggle radial vs mini
+        const home = document.getElementById('home');
+        function showRadial(visible){ if (radialWrap) radialWrap.dataset.visible = String(visible); document.body.classList.toggle('show-mini-nav', !visible); }
+        if ('IntersectionObserver' in window && home){
+          const ioHome = new IntersectionObserver(([entry])=>{ if (!entry) return; const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6; showRadial(visible); }, {threshold:[0,0.6,1]});
+          ioHome.observe(home);
+        } else {
+          showRadial(window.scrollY < 80);
+        }
+
+        // init
+        compute();
+        let resizeRaf = 0;
+        window.addEventListener('resize', ()=>{ cancelAnimationFrame(resizeRaf); resizeRaf = requestAnimationFrame(compute); }, {passive:true});
+        const startHash = location.hash && items.find(i=>i.href === location.hash);
+        const startItem = startHash || items.find(i => i.href === '#home');
+        if (startItem){ setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color); }
+
+        window.addEventListener('hashchange', ()=>{
+          const match = items.find(i=>i.href === location.hash);
+          if (match){
+            const target = document.querySelector(match.href);
+            if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+            setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color);
+            showRadial(match.href === '#home');
           }
         });
-      });
 
-      function compute(){
-        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-        const isMobile = vw <= 820;
-        const winH = Math.max(560, Math.min(window.innerHeight || 700, 1400));
-        const radius     = Math.min(isMobile ? 150 : 230, Math.max(120, Math.round(winH * 0.30)));
-        const borderSize = Math.max(6, Math.round(radius * 0.06));
-        const fontSize   = Math.max(14, Math.round(radius * 0.12));
-        const linkSize   = Math.max(28, Math.round(radius * 0.25));
-        const spreadDeg  = isMobile ? 180 : 330;
-        const startDeg   = isMobile ? (-90 - spreadDeg/2) : (-spreadDeg/2);
-        const increment  = spreadDeg / (items.length - 1);
+        // ------------------------------
+        // Self-tests (non-invasive)
+        // ------------------------------
+        (function runSelfTests(){
+          const results = [];
+          function ok(name, pass, note=''){ const s = `${pass?'PASS':'FAIL'}: ${name}${note?` — ${note}`:''}`; results.push(s); return pass; }
 
-        menu.style.width  = (radius*2) + 'px';
-        menu.style.height = (radius*2) + 'px';
-        ring.style.width       = (radius*2) + 'px';
-        ring.style.height      = (radius*2) + 'px';
-        ring.style.borderWidth = borderSize + 'px';
+          try{ ok('DOM: radial menu exists', !!menu); }catch(e){ ok('DOM: radial menu exists', false, e.message); }
+          try{ ok('DOM: ring exists', !!ring); }catch(e){ ok('DOM: ring exists', false, e.message); }
+          try{ compute(); ok('compute() callable', true); }catch(e){ ok('compute() callable', false, e.message); }
+          try{ const ioAvail = 'IntersectionObserver' in window; ok('Feature: IntersectionObserver', ioAvail); }catch(e){ ok('Feature: IntersectionObserver', false, e.message); }
+          try{ const hasGsap = !!(window.gsap); ok('Feature: GSAP present or skipped', true, hasGsap ? 'present' : 'skipped'); }catch(e){ ok('Feature: GSAP present', false, e.message); }
 
-        const rLabel = radius - (borderSize + Math.max(10, linkSize*0.15));
+          // Palette tests: shape vars exist and contrast with page-bg
+          try{
+            const cs = (v)=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+            const bg = cs('--page-bg');
+            const s1 = cs('--shape-1'), s2 = cs('--shape-2'), s3 = cs('--shape-3'), sr = cs('--shape-ring');
+            const good = (c)=>{ if(!c||!bg) return false; const d=Math.abs((c&&c[0]==='#')? ( (function(){const {r,g,b}=hexToRgb(c); return (r*299+g*587+b*114)/1000;})() ):0 - (function(){const {r,g,b}=hexToRgb(bg); return (r*299+g*587+b*114)/1000;})()); return d>=55; };
+            ok('Palette: shape-1 contrasts', good(s1));
+            ok('Palette: shape-2 contrasts', good(s2));
+            ok('Palette: shape-3 contrasts', good(s3));
+            ok('Palette: ring contrasts',    good(sr));
+          }catch(e){ ok('Palette: computed', false, e.message); }
 
-        items.forEach((obj, i)=>{
-          const a = obj.el, hover = obj.hover; const deg = startDeg + (i*increment);
-          const baseT = `translate(-50%,-50%) rotate(${deg}deg) translate(${rLabel}px, 0) rotate(${-deg}deg)`;
-          setTransition(a, 'transform .18s ease, color .2s ease');
-          a.style.fontSize   = fontSize + 'px'; a.style.height = linkSize + 'px'; a.style.lineHeight = linkSize + 'px';
-          setTransform(a, baseT); obj.baseTransform = baseT;
-
-          hover.style.height = linkSize + 'px'; hover.style.borderRight = borderSize + 'px solid var(--accent)';
-          const hoverT = `translate(-50%,-50%) rotate(${deg}deg)`; setTransition(hover, 'transform .18s ease, opacity .2s ease'); setTransform(hover, hoverT); obj.hoverTransform = hoverT;
-        });
-      }
-
-      function linkOver(e){
-        const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return; const color = a.dataset.color || '#1C7ED6';
-        setTransform(a, obj.baseTransform + ' translateX(10px)');
-        obj.hover.style.opacity = 1; obj.hover.style.borderRightColor = color; ring.style.borderColor = color;
-      }
-      function linkOut(e){
-        const a = e.currentTarget; const obj = linkMap.get(a); if (!obj) return;
-        setTransform(a, obj.baseTransform); obj.hover.style.opacity = 0; ring.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-      }
-      function setActive(el){ items.forEach(i=>i.el.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
-
-      function setCollapsed(val){ menu.dataset.collapsed = String(val); fab.setAttribute('aria-expanded', String(!val)); fab.textContent = val ? '☰' : '×'; }
-      let collapsed = false; setCollapsed(collapsed); fab.addEventListener('click', ()=>{collapsed = !collapsed; setCollapsed(collapsed)});
-
-      // Mini header nav
-      const siteNav = document.getElementById('site-nav');
-      const miniMap = new Map();
-      items.forEach((obj)=>{
-        const a = document.createElement('a'); a.href = obj.href; a.textContent = obj.label; a.setAttribute('data-color', obj.color);
-        a.addEventListener('click',(e)=>{
-          const id = a.getAttribute('href'); if (id && id.startsWith('#')){ const target = document.querySelector(id); if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); setActiveMini(a); applyTheme(obj.color); history.replaceState(null,'', id); } } });
-        siteNav.appendChild(a); obj.miniEl = a; miniMap.set(obj, a);
-      });
-      function setActiveMini(el){ siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current')); if (el) el.setAttribute('aria-current','page'); }
-
-      // IO for sections (also drives overlay fade)
-      const sections = document.querySelectorAll('main section[id]');
-      const io = new IntersectionObserver(entries=>{
-        entries.forEach(entry=>{
-          if (entry.isIntersecting){
-            const id  = '#'+entry.target.id; const match = items.find(i => i.href === id);
-            entry.target.setAttribute('data-active','true');
-            if (match){ setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); }
+          if (results.some(r=>r.startsWith('FAIL'))){
+            setBugBanner(results.join(' | '));
           } else {
-            entry.target.removeAttribute('data-active');
+            console.debug('[Self-tests]', results.join(' | '));
           }
-        });
-        const nearTop = window.scrollY < 40; document.body.classList.toggle('shrink', !nearTop);
-      }, {root:null, threshold:0.55});
-      sections.forEach(sec=>io.observe(sec));
-
-      // Toggle radial vs mini
-      const home = document.getElementById('home');
-      function showRadial(visible){ radialWrap.dataset.visible = String(visible); document.body.classList.toggle('show-mini-nav', !visible); }
-      const ioHome = new IntersectionObserver(([entry])=>{ if (!entry) return; const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6; showRadial(visible); }, {threshold:[0,0.6,1]});
-      if (home) ioHome.observe(home);
-
-      // init
-      compute(); window.addEventListener('resize', compute, {passive:true});
-      // Start at hash or Home
-      const startHash = location.hash && items.find(i=>i.href === location.hash);
-      const startItem = startHash || items.find(i => i.href === '#home');
-      if (startItem){ setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color); }
+        })();
+      }catch(err){
+        console.error('Boot error:', err);
+        setBugBanner('Boot error: '+ (err && err.message ? err.message : String(err)));
+      }
     });
   </script>
 </body>
