@@ -1,4 +1,4 @@
-<!-- /index.html — Bauhaus variant, strict primaries, compact -->
+<!-- /index.html — Bauhaus variant, strict primaries, compact (stable, GSAP-free) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,10 +38,6 @@
     img{max-width:100%;display:block}
     a{color:inherit}
     :focus-visible{outline:none;box-shadow:var(--ring);border-radius:10px}
-
-    /* Dev banner (hidden by default) */
-    #bug-banner{position:fixed;left:12px;bottom:12px;z-index:11000;background:#ffefef;color:#8a1f1f;border:2px solid #8a1f1f;border-radius:10px;padding:.5rem .75rem;font:600 12px/1.2 var(--sans);display:none}
-    #bug-banner[data-show="true"]{display:block}
 
     /* Bauhaus backdrop */
     .bauhaus{position:fixed;inset:0;z-index:-2;pointer-events:none}
@@ -96,6 +92,8 @@
 
     /* ------------------------------ RADIAL MENU ------------------------------ */
     #radial-menu-wrap{position:fixed;inset:0;z-index:10990;display:grid;place-items:center;pointer-events:none;opacity:1;transform:scale(1);transition:opacity .28s ease,transform .28s ease}
+    /* Ensure FAB/menu clickable while wrapper blocks events */
+    #radial-menu-wrap .radial-menu, #radial-menu-wrap .radial-fab{pointer-events:auto}
     #radial-menu-wrap[data-visible="false"]{opacity:0;transform:scale(.96);pointer-events:none}
     .radial-menu{position:relative;width:520px;height:520px;pointer-events:none}
     .radial-menu *{pointer-events:auto}
@@ -238,130 +236,120 @@
     </div>
   </div>
 
-  <!-- Dev banner (hidden); toggle via setBugBanner() in JS -->
-  <div id="bug-banner" aria-live="assertive"></div>
-
-  <!-- GSAP (optional, deferred) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <script>
-  // Lightweight bug surface
-  function setBugBanner(msg){try{const el=document.getElementById('bug-banner');if(!el)return;el.textContent=msg;el.dataset.show='true';}catch(_){}}
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  window.addEventListener('DOMContentLoaded',()=>{try{
-    const prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      /* ---------- Utils ---------- */
+      const setTransform = (el, val) => { if (!el) return; el.style.transform = val };
+      const setTransition = (el, val) => { if (!el) return; el.style.transition = val };
 
-    /* ---------- Utils ---------- */
-    const setTransform=(el,val)=>{if(!el)return;el.style.transform=val};
-    const setTransition=(el,val)=>{if(!el)return;el.style.transition=val};
+      /* ---------- Color helpers ---------- */
+      const hexToRgb = (hex) => { let h = String(hex || '').replace('#',''); if (!h) return {r:0,g:0,b:0}; if (h.length === 3) h = h.split('').map(x => x + x).join(''); const num = parseInt(h, 16); return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 } };
+      const rgbToHsl = (r,g,b) => { r/=255; g/=255; b/=255; const max=Math.max(r,g,b),min=Math.min(r,g,b); let h,s,l=(max+min)/2; if(max===min){h=s=0} else { const d=max-min; s=l>0.5?d/(2-max-min):d/(max+min); switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4} h*=60 } s*=100; l*=100; return {h,s,l} };
+      const hexToHsl = (hex) => { const {r,g,b} = hexToRgb(hex); return rgbToHsl(r,g,b) };
+      const hslToHex = (h,s,l) => { s/=100; l/=100; const a=s*Math.min(l,1-l); const f=n=>{const k=(n+h/30)%12; const c=l-a*Math.max(-1,Math.min(k-3,Math.min(9-k,1))); return Math.round(255*c)}; const r=f(0), g=f(8), b=f(4); return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('') };
+      const clamp = (v,min,max) => Math.max(min, Math.min(max, v));
+      const yiq = (hex) => { const {r,g,b}=hexToRgb(hex); return (r*299 + g*587 + b*114)/1000 };
+      const hueDist = (a,b) => { let d = Math.abs((a||0)-(b||0))%360; return d>180?360-d:d };
+      const yiqIsLight = (hex) => yiq(hex) > 170; // tuned for yellow
 
-    /* ---------- Color helpers ---------- */
-    const hexToRgb=(hex)=>{let h=String(hex||'').replace('#','');if(!h)return{r:0,g:0,b:0};if(h.length===3)h=h.split('').map(x=>x+x).join('');const num=parseInt(h,16);return{r:(num>>16)&255,g:(num>>8)&255,b:num&255}};
-    const rgbToHsl=(r,g,b)=>{r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2;if(max===min){h=s=0}else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4}h*=60}s*=100;l*=100;return{h,s,l}};
-    const hexToHsl=(hex)=>{const {r,g,b}=hexToRgb(hex);return rgbToHsl(r,g,b)};
-    const hslToHex=(h,s,l)=>{s/=100;l/=100;const a=s*Math.min(l,1-l);const f=n=>{const k=(n+h/30)%12;const c=l-a*Math.max(-1,Math.min(k-3,Math.min(9-k,1)));return Math.round(255*c)};const r=f(0),g=f(8),b=f(4);return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('')};
-    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-    const yiq=(hex)=>{const {r,g,b}=hexToRgb(hex);return(r*299+g*587+b*114)/1000};
-    const hueDist=(a,b)=>{let d=Math.abs((a||0)-(b||0))%360;return d>180?360-d:d};
-    const yiqIsLight=(hex)=>yiq(hex)>170; // tuned for yellow
+      function shadeForContrast(bgHex, baseHex, minDelta=65){
+        let {h,s,l}=hexToHsl(baseHex); s=clamp(s,88,98); l=clamp(l,34,66);
+        const bgY=yiq(bgHex); let cur=hslToHex(h,s,l), curY=yiq(cur), tries=0;
+        while(Math.abs(curY-bgY)<minDelta && tries<10){ l=(curY>bgY)?clamp(l-6,28,66):clamp(l+6,34,72); cur=hslToHex(h,s,l); curY=yiq(cur); tries++; }
+        return cur;
+      }
 
-    // Only adjust lightness, keep strict hue + high saturation
-    function shadeForContrast(bgHex, baseHex, minDelta=65){
-      let {h,s,l}=hexToHsl(baseHex); s=clamp(s,88,98); l=clamp(l,34,66);
-      const bgY=yiq(bgHex); let cur=hslToHex(h,s,l), curY=yiq(cur), tries=0;
-      while(Math.abs(curY-bgY)<minDelta && tries<10){ l=(curY>bgY)?clamp(l-6,28,66):clamp(l+6,34,72); cur=hslToHex(h,s,l); curY=yiq(cur); tries++; }
-      return cur;
+      /* ---------- Strict Bauhaus palette (snap to primaries) ---------- */
+      function buildStrictBauhausPalette(accent){
+        const cssVar=(k,fb)=>getComputedStyle(document.documentElement).getPropertyValue(k).trim()||fb;
+        const RED=cssVar('--bau-red','#E94F37'), BLUE=cssVar('--bau-blue','#1C7ED6'), YELLOW=cssVar('--bau-yellow','#F6C90E'), BLUE_LT=cssVar('--bau-blue-light','#4da3f0');
+        const {h:ha}=hexToHsl(accent);
+        const H={red:hexToHsl(RED).h, blue:hexToHsl(BLUE).h, yellow:hexToHsl(YELLOW).h};
+        const nearest=[{name:'red',hex:RED,d:hueDist(ha,H.red)},{name:'blue',hex:BLUE,d:hueDist(ha,H.blue)},{name:'yellow',hex:YELLOW,d:hueDist(ha,H.yellow)}].sort((a,b)=>a.d-b.d)[0];
+        const others=[{name:'red',hex:RED},{name:'blue',hex:BLUE},{name:'yellow',hex:YELLOW}].filter(o=>o.name!==nearest.name);
+        const c1=shadeForContrast(accent, others[0].hex);
+        const c2=shadeForContrast(accent, others[1].hex);
+        const c3=shadeForContrast(accent, others[0].hex);
+        const bar=shadeForContrast(accent, others[1].hex, 55);
+        const ring=shadeForContrast(accent, BLUE_LT, 60);
+        return{c1,c2,c3,bar,ring};
+      }
+
+      function applyTheme(color){
+        const root=document.documentElement; root.style.setProperty('--page-bg',color); root.style.setProperty('--accent',color);
+        const {c1,c2,c3,bar,ring}=buildStrictBauhausPalette(color);
+        root.style.setProperty('--shape-1',c1); root.style.setProperty('--shape-2',c2); root.style.setProperty('--shape-3',c3); root.style.setProperty('--shape-4',bar); root.style.setProperty('--shape-ring',ring);
+        const lightBg=yiqIsLight(color); const text=lightBg?'#0e0e0e':'#f7f7f7'; const textMuted=lightBg?'rgba(0,0,0,.72)':'rgba(247,247,247,.82)';
+        root.style.setProperty('--text',text); root.style.setProperty('--text-muted',textMuted);
+        const {r,g,b}=hexToRgb(color||'#1C7ED6'); const ringAlpha=lightBg?0.22:0.35; root.style.setProperty('--ring',`0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
+      }
+
+      /* ---------- Cursor (delegated to include dynamic links) ---------- */
+      const cursor=document.getElementById('custom-cursor'); const isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0; if(isTouch||prefersReduced){if(cursor)cursor.style.display='none'}else if(cursor){
+        document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
+        const hoverSel='a,button,.case,.card,.rm-link';
+        document.addEventListener('mouseover',e=>{if(e.target.closest(hoverSel)) cursor.classList.add('active')});
+        document.addEventListener('mouseout',e=>{if(e.target.closest(hoverSel)) cursor.classList.remove('active')});
+      }
+
+      /* ---------- Menus ---------- */
+      const radialWrap=document.getElementById('radial-menu-wrap'); const menu=document.getElementById('radial-menu'); const ring=menu?menu.querySelector('.rm-circle'):null; const fab=document.getElementById('radial-fab');
+      const css=(k,fb)=>getComputedStyle(document.documentElement).getPropertyValue(k).trim()||fb;
+      const items=[
+        {label:'Home',href:'#home',color:css('--bau-blue','#1C7ED6')},
+        {label:'About',href:'#about',color:css('--bau-red','#E94F37')},
+        {label:'Skills',href:'#skills',color:css('--bau-yellow','#F6C90E')},
+        {label:'Experience',href:'#experience',color:css('--bau-blue','#1C7ED6')},
+        {label:'Cases',href:'#cases',color:css('--bau-red','#E94F37')},
+        {label:'Contact',href:'#contact',color:css('--bau-yellow','#F6C90E')}
+      ];
+
+      // Build radial links
+      const linkMap=new Map();
+      if(menu){items.forEach((obj,idx)=>{const a=document.createElement('a'); a.className='rm-link'; a.textContent=obj.label; a.href=obj.href; a.setAttribute('data-color',obj.color); a.dataset.idx=String(idx);
+        const hover=document.createElement('span'); hover.className='rm-hover'; menu.appendChild(a); menu.appendChild(hover); obj.el=a; obj.hover=hover; linkMap.set(a,obj);
+        const act=(e)=>{const id=a.getAttribute('href'); if(id&&id.startsWith('#')){const t=document.querySelector(id); if(t){e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(obj.el); setActiveMini(miniMap.get(obj)); applyTheme(obj.color); if(id!=='#home') showRadial(false); if(history.replaceState) history.replaceState(null,'',id);}}};
+        a.addEventListener('mouseover',linkOver); a.addEventListener('mouseout',linkOut); a.addEventListener('focus',linkOver); a.addEventListener('blur',linkOut); a.addEventListener('click',act);
+      })}
+
+      function compute(){ if(!menu||!ring)return; const vw=Math.max(document.documentElement.clientWidth||0,window.innerWidth||0); const isMobile=vw<=820; const winH=Math.max(560,Math.min(window.innerHeight||700,1400));
+        const radius=Math.min(isMobile?150:230,Math.max(120,Math.round(winH*.30))); const borderSize=Math.max(6,Math.round(radius*.06)); const fontSize=Math.max(14,Math.round(radius*.12)); const linkSize=Math.max(28,Math.round(radius*.25)); const spreadDeg=isMobile?180:330; const startDeg=isMobile?(-90-spreadDeg/2):(-spreadDeg/2); const increment=spreadDeg/(items.length-1);
+        menu.style.width=menu.style.height= (radius*2)+'px'; ring.style.width=ring.style.height= (radius*2)+'px'; ring.style.setProperty('--rm-thickness',borderSize+'px'); const rLabel=radius-(borderSize+Math.max(10,linkSize*.15));
+        items.forEach((obj,i)=>{if(!obj.el||!obj.hover)return; const a=obj.el, hover=obj.hover; const deg=startDeg+(i*increment); const baseT=`translate(-50%,-50%) rotate(${deg}deg) translate(${rLabel}px,0) rotate(${-deg}deg)`; setTransition(a,'transform .18s ease,color .2s ease'); a.style.fontSize=fontSize+'px'; a.style.height=linkSize+'px'; a.style.lineHeight=linkSize+'px'; setTransform(a,baseT); obj.baseTransform=baseT; hover.style.height=linkSize+'px'; hover.style.borderRight=borderSize+'px solid var(--accent)'; const hoverT=`translate(-50%,-50%) rotate(${deg}deg)`; setTransition(hover,'transform .18s ease,opacity .2s ease'); setTransform(hover,hoverT); obj.hoverTransform=hoverT;});
+      }
+
+      function linkOver(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; const blue=css('--bau-blue','#1C7ED6').toLowerCase(); const blueLight=css('--bau-blue-light','#4da3f0'); const color=(a.dataset.color||'#1C7ED6').toLowerCase(); const hoverColor=(color===blue)?blueLight:(a.dataset.color||'#1C7ED6'); setTransform(a,(obj.baseTransform||'')+' translateX(10px)'); if(obj.hover){obj.hover.style.opacity=1; obj.hover.style.borderRightColor=hoverColor} if(ring) ring.style.transform='rotate(20deg)'}
+      function linkOut(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; setTransform(a,obj.baseTransform||''); if(obj.hover)obj.hover.style.opacity=0; if(ring) ring.style.transform='rotate(0deg)'}
+      function setActive(el){items.forEach(i=>i.el&&i.el.removeAttribute('aria-current')); if(el)el.setAttribute('aria-current','page')}
+
+      function setCollapsed(v){if(menu)menu.dataset.collapsed=String(v); if(fab){fab.setAttribute('aria-expanded',String(!v)); fab.textContent=v?'☰':'×'}}
+      let collapsed=false; setCollapsed(collapsed); if(fab) fab.addEventListener('click',()=>{collapsed=!collapsed; setCollapsed(collapsed)});
+
+      // Mini header nav
+      const siteNav=document.getElementById('site-nav'); const miniMap=new Map(); if(siteNav){items.forEach((obj)=>{const a=document.createElement('a'); a.href=obj.href; a.textContent=obj.label; a.setAttribute('data-color',obj.color); a.addEventListener('click',(e)=>{const id=a.getAttribute('href'); if(id&&id.startsWith('#')){const t=document.querySelector(id); if(t){e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); setActiveMini(a); applyTheme(obj.color); if(history.replaceState) history.replaceState(null,'',id);}}}); siteNav.appendChild(a); obj.miniEl=a; miniMap.set(obj,a);});}
+      function setActiveMini(el){if(!siteNav)return; siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current')); if(el)el.setAttribute('aria-current','page')}
+
+      // IO for sections + overlay
+      const sections=document.querySelectorAll('main section[id]');
+      if('IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const id='#'+entry.target.id; const match=items.find(i=>i.href===id); entry.target.setAttribute('data-active','true'); if(match){setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); if(history.replaceState) history.replaceState(null,'',id);} } else {entry.target.removeAttribute('data-active')}}); const nearTop=window.scrollY<40; document.body.classList.toggle('shrink',!nearTop)}, {root:null,threshold:0.55}); sections.forEach(sec=>io.observe(sec));}
+      else {sections.forEach(sec=>sec.setAttribute('data-active','true')); const first=sections[0]; if(first){const c=first.dataset.color||css('--bau-blue','#1C7ED6'); applyTheme(c)}}
+
+      // Toggle radial vs mini
+      const home=document.getElementById('home'); function showRadial(v){if(radialWrap)radialWrap.dataset.visible=String(v); document.body.classList.toggle('show-mini-nav',!v)}
+      if('IntersectionObserver' in window && home){const ioHome=new IntersectionObserver(([entry])=>{if(!entry)return; const visible=entry.isIntersecting && entry.intersectionRatio>=0.6; showRadial(visible)}, {threshold:[0,0.6,1]}); ioHome.observe(home)} else {showRadial(window.scrollY<80)}
+
+      // init
+      compute(); let resizeRaf=0; window.addEventListener('resize',()=>{cancelAnimationFrame(resizeRaf); resizeRaf=requestAnimationFrame(compute)},{passive:true});
+      const startItem=(location.hash && items.find(i=>i.href===location.hash)) || items.find(i=>i.href==='#home'); if(startItem){setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color)}
+      window.addEventListener('hashchange',()=>{const match=items.find(i=>i.href===location.hash); if(match){const t=document.querySelector(match.href); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); showRadial(match.href==="#home")}});
+
+    } catch (err) {
+      console.error('Boot error:', err);
     }
-
-    /* ---------- Strict Bauhaus palette (snap to primaries) ---------- */
-    function buildStrictBauhausPalette(accent){
-      const cssVar=(k,fb)=>getComputedStyle(document.documentElement).getPropertyValue(k).trim()||fb;
-      const RED=cssVar('--bau-red','#E94F37'), BLUE=cssVar('--bau-blue','#1C7ED6'), YELLOW=cssVar('--bau-yellow','#F6C90E'), BLUE_LT=cssVar('--bau-blue-light','#4da3f0');
-      const {h:ha}=hexToHsl(accent);
-      const H={red:hexToHsl(RED).h, blue:hexToHsl(BLUE).h, yellow:hexToHsl(YELLOW).h};
-      const nearest=[{name:'red',hex:RED,d:hueDist(ha,H.red)},{name:'blue',hex:BLUE,d:hueDist(ha,H.blue)},{name:'yellow',hex:YELLOW,d:hueDist(ha,H.yellow)}].sort((a,b)=>a.d-b.d)[0];
-      const others=[{name:'red',hex:RED},{name:'blue',hex:BLUE},{name:'yellow',hex:YELLOW}].filter(o=>o.name!==nearest.name);
-      // Contrast shades (only lightness changes)
-      const c1=shadeForContrast(accent, others[0].hex);
-      const c2=shadeForContrast(accent, others[1].hex);
-      const c3=shadeForContrast(accent, others[0].hex);
-      const bar=shadeForContrast(accent, others[1].hex, 55);
-      const ring=shadeForContrast(accent, BLUE_LT, 60);
-      return{c1,c2,c3,bar,ring};
-    }
-
-    function applyTheme(color){
-      const root=document.documentElement; root.style.setProperty('--page-bg',color); root.style.setProperty('--accent',color);
-      const {c1,c2,c3,bar,ring}=buildStrictBauhausPalette(color);
-      root.style.setProperty('--shape-1',c1); root.style.setProperty('--shape-2',c2); root.style.setProperty('--shape-3',c3); root.style.setProperty('--shape-4',bar); root.style.setProperty('--shape-ring',ring);
-      const lightBg=yiqIsLight(color); const text=lightBg?'#0e0e0e':'#f7f7f7'; const textMuted=lightBg?'rgba(0,0,0,.72)':'rgba(247,247,247,.82)';
-      root.style.setProperty('--text',text); root.style.setProperty('--text-muted',textMuted);
-      const {r,g,b}=hexToRgb(color||'#1C7ED6'); const ringAlpha=lightBg?0.22:0.35; root.style.setProperty('--ring',`0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
-    }
-
-    /* ---------- Optional GSAP entrance ---------- */
-    if(!prefersReduced && 'gsap' in window && window.gsap){try{ if('ScrollTrigger' in window && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger); document.querySelectorAll('main section').forEach(sec=>{gsap.fromTo(sec,{y:12,opacity:0},{y:0,opacity:1,duration:.7,ease:'power2.out',scrollTrigger:('ScrollTrigger' in window && window.ScrollTrigger)?{trigger:sec,start:'top 80%',end:'bottom 20%',toggleActions:'play none none reverse'}:undefined});});}catch(e){console.debug('GSAP skipped',e)}}
-
-    /* ---------- Cursor ---------- */
-    const cursor=document.getElementById('custom-cursor'); const isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0; if(isTouch||prefersReduced){if(cursor)cursor.style.display='none'}else if(cursor){document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'}); document.querySelectorAll('a,button,.case,.card').forEach(el=>{el.addEventListener('mouseenter',()=>cursor.classList.add('active'));el.addEventListener('mouseleave',()=>cursor.classList.remove('active'))})}
-
-    /* ---------- Menus ---------- */
-    const radialWrap=document.getElementById('radial-menu-wrap'); const menu=document.getElementById('radial-menu'); const ring=menu?menu.querySelector('.rm-circle'):null; const fab=document.getElementById('radial-fab');
-    const css=(k,fb)=>getComputedStyle(document.documentElement).getPropertyValue(k).trim()||fb;
-    const items=[
-      {label:'Home',href:'#home',color:css('--bau-blue','#1C7ED6')},
-      {label:'About',href:'#about',color:css('--bau-red','#E94F37')},
-      {label:'Skills',href:'#skills',color:css('--bau-yellow','#F6C90E')},
-      {label:'Experience',href:'#experience',color:css('--bau-blue','#1C7ED6')},
-      {label:'Cases',href:'#cases',color:css('--bau-red','#E94F37')},
-      {label:'Contact',href:'#contact',color:css('--bau-yellow','#F6C90E')}
-    ];
-
-    // Build radial links
-    const linkMap=new Map();
-    if(menu){items.forEach((obj,idx)=>{const a=document.createElement('a'); a.className='rm-link'; a.textContent=obj.label; a.href=obj.href; a.setAttribute('data-color',obj.color); a.dataset.idx=String(idx);
-      const hover=document.createElement('span'); hover.className='rm-hover'; menu.appendChild(a); menu.appendChild(hover); obj.el=a; obj.hover=hover; linkMap.set(a,obj);
-      const act=(e)=>{const id=a.getAttribute('href'); if(id&&id.startsWith('#')){const t=document.querySelector(id); if(t){e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(obj.el); setActiveMini(miniMap.get(obj)); applyTheme(obj.color); if(id!=='#home') showRadial(false); history.replaceState(null,'',id);}}};
-      a.addEventListener('mouseover',linkOver); a.addEventListener('mouseout',linkOut); a.addEventListener('focus',linkOver); a.addEventListener('blur',linkOut); a.addEventListener('click',act);
-    })}
-
-    function compute(){ if(!menu||!ring)return; const vw=Math.max(document.documentElement.clientWidth||0,window.innerWidth||0); const isMobile=vw<=820; const winH=Math.max(560,Math.min(window.innerHeight||700,1400));
-      const radius=Math.min(isMobile?150:230,Math.max(120,Math.round(winH*.30))); const borderSize=Math.max(6,Math.round(radius*.06)); const fontSize=Math.max(14,Math.round(radius*.12)); const linkSize=Math.max(28,Math.round(radius*.25)); const spreadDeg=isMobile?180:330; const startDeg=isMobile?(-90-spreadDeg/2):(-spreadDeg/2); const increment=spreadDeg/(items.length-1);
-      menu.style.width=menu.style.height= (radius*2)+'px'; ring.style.width=ring.style.height= (radius*2)+'px'; ring.style.setProperty('--rm-thickness',borderSize+'px'); const rLabel=radius-(borderSize+Math.max(10,linkSize*.15));
-      items.forEach((obj,i)=>{if(!obj.el||!obj.hover)return; const a=obj.el, hover=obj.hover; const deg=startDeg+(i*increment); const baseT=`translate(-50%,-50%) rotate(${deg}deg) translate(${rLabel}px,0) rotate(${-deg}deg)`; setTransition(a,'transform .18s ease,color .2s ease'); a.style.fontSize=fontSize+'px'; a.style.height=linkSize+'px'; a.style.lineHeight=linkSize+'px'; setTransform(a,baseT); obj.baseTransform=baseT; hover.style.height=linkSize+'px'; hover.style.borderRight=borderSize+'px solid var(--accent)'; const hoverT=`translate(-50%,-50%) rotate(${deg}deg)`; setTransition(hover,'transform .18s ease,opacity .2s ease'); setTransform(hover,hoverT); obj.hoverTransform=hoverT;});
-    }
-
-    function linkOver(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; const blue=css('--bau-blue','#1C7ED6').toLowerCase(); const blueLight=css('--bau-blue-light','#4da3f0'); const color=(a.dataset.color||'#1C7ED6').toLowerCase(); const hoverColor=(color===blue)?blueLight:(a.dataset.color||'#1C7ED6'); setTransform(a,(obj.baseTransform||'')+' translateX(10px)'); if(obj.hover){obj.hover.style.opacity=1; obj.hover.style.borderRightColor=hoverColor} if(ring) ring.style.transform='rotate(20deg)'}
-    function linkOut(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; setTransform(a,obj.baseTransform||''); if(obj.hover)obj.hover.style.opacity=0; if(ring) ring.style.transform='rotate(0deg)'}
-    function setActive(el){items.forEach(i=>i.el&&i.el.removeAttribute('aria-current')); if(el)el.setAttribute('aria-current','page')}
-
-    function setCollapsed(v){if(menu)menu.dataset.collapsed=String(v); if(fab){fab.setAttribute('aria-expanded',String(!v)); fab.textContent=v?'☰':'×'}}
-    let collapsed=false; setCollapsed(collapsed); if(fab) fab.addEventListener('click',()=>{collapsed=!collapsed; setCollapsed(collapsed)});
-
-    // Mini header nav
-    const siteNav=document.getElementById('site-nav'); const miniMap=new Map(); if(siteNav){items.forEach((obj)=>{const a=document.createElement('a'); a.href=obj.href; a.textContent=obj.label; a.setAttribute('data-color',obj.color); a.addEventListener('click',(e)=>{const id=a.getAttribute('href'); if(id&&id.startsWith('#')){const t=document.querySelector(id); if(t){e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); setActiveMini(a); applyTheme(obj.color); history.replaceState(null,'',id);}}}); siteNav.appendChild(a); obj.miniEl=a; miniMap.set(obj,a);});}
-    function setActiveMini(el){if(!siteNav)return; siteNav.querySelectorAll('a').forEach(n=>n.removeAttribute('aria-current')); if(el)el.setAttribute('aria-current','page')}
-
-    // IO for sections + overlay
-    const sections=document.querySelectorAll('main section[id]');
-    if('IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const id='#'+entry.target.id; const match=items.find(i=>i.href===id); entry.target.setAttribute('data-active','true'); if(match){setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color);} } else {entry.target.removeAttribute('data-active')}}); const nearTop=window.scrollY<40; document.body.classList.toggle('shrink',!nearTop)}, {root:null,threshold:0.55}); sections.forEach(sec=>io.observe(sec));}
-    else {sections.forEach(sec=>sec.setAttribute('data-active','true')); const first=sections[0]; if(first){const c=first.dataset.color||css('--bau-blue','#1C7ED6'); applyTheme(c)}}
-
-    // Toggle radial vs mini
-    const home=document.getElementById('home'); function showRadial(v){if(radialWrap)radialWrap.dataset.visible=String(v); document.body.classList.toggle('show-mini-nav',!v)}
-    if('IntersectionObserver' in window && home){const ioHome=new IntersectionObserver(([entry])=>{if(!entry)return; const visible=entry.isIntersecting && entry.intersectionRatio>=0.6; showRadial(visible)}, {threshold:[0,0.6,1]}); ioHome.observe(home)} else {showRadial(window.scrollY<80)}
-
-    // init
-    compute(); let resizeRaf=0; window.addEventListener('resize',()=>{cancelAnimationFrame(resizeRaf); resizeRaf=requestAnimationFrame(compute)},{passive:true});
-    const startItem=(location.hash && items.find(i=>i.href===location.hash)) || items.find(i=>i.href==='#home'); if(startItem){setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color)}
-    window.addEventListener('hashchange',()=>{const match=items.find(i=>i.href===location.hash); if(match){const t=document.querySelector(match.href); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); showRadial(match.href==="#home")}});
-
-    /* ---------- Self-tests (trimmed) ---------- */
-    (function(){const results=[]; const ok=(name,pass,n='')=>{results.push(`${pass?'PASS':'FAIL'}: ${name}${n?` — ${n}`:''}`)}; try{ok('DOM: radial menu exists',!!menu)}catch(e){ok('DOM: radial menu exists',false,e.message)} try{compute();ok('compute() callable',true)}catch(e){ok('compute() callable',false,e.message)} try{const cs=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim(); const bg=cs('--page-bg'); const good=c=>{if(!c||!bg)return false; const y=hex=>{const {r,g,b}=hexToRgb(hex);return(r*299+g*587+b*114)/1000}; return Math.abs(y(c)-y(bg))>=55}; ok('Palette: shape-1 contrasts',good(cs('--shape-1'))); ok('Palette: shape-2 contrasts',good(cs('--shape-2'))); ok('Palette: shape-3 contrasts',good(cs('--shape-3'))); ok('Palette: ring contrasts',good(cs('--shape-ring')));}catch(e){ok('Palette checks',false,e.message)} if(results.some(r=>r.startsWith('FAIL'))) setBugBanner(results.join(' | ')); else console.debug('[Self-tests]',results.join(' | '));})();
-
-  }catch(err){console.error('Boot error:',err); setBugBanner('Boot error: '+(err&&err.message?err.message:String(err)))}}
-  );
+  });
   </script>
 </body>
 </html>
