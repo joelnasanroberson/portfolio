@@ -207,7 +207,7 @@
       </div>
     </section>
 
-    <section id="cases" aria-labelledby="cases-h" data-color="#E94F37">
+    <section id="cases" aria-labelledby="cases-h" data-color="#E94F37" data-src="cases.html">
       <div class="container">
         <h2 id="cases-h">Case Studies</h2>
         <div class="projects-grid">
@@ -261,6 +261,37 @@
         while(Math.abs(curY-bgY)<minDelta && tries<10){ l=(curY>bgY)?clamp(l-6,28,66):clamp(l+6,34,72); cur=hslToHex(h,s,l); curY=yiq(cur); tries++; }
         return cur;
       }
+
+      /*Sideloader for #Cases */
+
+      async function injectExternalSection(sectionEl){
+try{
+const src = sectionEl.getAttribute('data-src');
+if(!src) return;
+const into = sectionEl.querySelector('.container') || sectionEl;
+const res = await fetch(src, {cache: 'no-cache', credentials: 'same-origin'});
+if(!res.ok) throw new Error(`HTTP ${res.status}`);
+const html = await res.text();
+const tpl = document.createElement('template');
+tpl.innerHTML = html.trim();
+// Prefer a named fragment, else first element
+let picked = tpl.content.querySelector('#cases-fragment')
+|| tpl.content.querySelector('#cases')
+|| tpl.content.firstElementChild;
+if(picked && picked.id === 'cases'){
+// If a whole <section id="cases"> was provided, grab its container
+picked = picked.querySelector('.container') || picked;
+}
+into.innerHTML = picked ? picked.innerHTML : html;
+} catch(err){
+console.error('Cases load failed:', err);
+}
+}
+
+
+// Auto-load any section that declares data-src (keeps this generic)
+document.querySelectorAll('section[data-src]')
+.forEach((sec) => injectExternalSection(sec));
 
       /* ---------- Strict Bauhaus palette (snap to primaries) ---------- */
       function buildStrictBauhausPalette(accent){
