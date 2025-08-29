@@ -207,10 +207,12 @@
       </div>
     </section>
 
+    <!-- NOTE: added data-src="cases.html" to sideload fragment -->
     <section id="cases" aria-labelledby="cases-h" data-color="#E94F37" data-src="cases.html">
       <div class="container">
         <h2 id="cases-h">Case Studies</h2>
         <div class="projects-grid">
+          <!-- Fallback content (only shown if fetch fails). Safe to leave simple. -->
           <button class="case" type="button">Brand Awareness</button>
           <button class="case" type="button">Community Growth</button>
           <button class="case" type="button">Conversion Optimization</button>
@@ -261,37 +263,6 @@
         while(Math.abs(curY-bgY)<minDelta && tries<10){ l=(curY>bgY)?clamp(l-6,28,66):clamp(l+6,34,72); cur=hslToHex(h,s,l); curY=yiq(cur); tries++; }
         return cur;
       }
-
-      /*Sideloader for #Cases */
-
-      async function injectExternalSection(sectionEl){
-try{
-const src = sectionEl.getAttribute('data-src');
-if(!src) return;
-const into = sectionEl.querySelector('.container') || sectionEl;
-const res = await fetch(src, {cache: 'no-cache', credentials: 'same-origin'});
-if(!res.ok) throw new Error(`HTTP ${res.status}`);
-const html = await res.text();
-const tpl = document.createElement('template');
-tpl.innerHTML = html.trim();
-// Prefer a named fragment, else first element
-let picked = tpl.content.querySelector('#cases-fragment')
-|| tpl.content.querySelector('#cases')
-|| tpl.content.firstElementChild;
-if(picked && picked.id === 'cases'){
-// If a whole <section id="cases"> was provided, grab its container
-picked = picked.querySelector('.container') || picked;
-}
-into.innerHTML = picked ? picked.innerHTML : html;
-} catch(err){
-console.error('Cases load failed:', err);
-}
-}
-
-
-// Auto-load any section that declares data-src (keeps this generic)
-document.querySelectorAll('section[data-src]')
-.forEach((sec) => injectExternalSection(sec));
 
       /* ---------- Strict Bauhaus palette (snap to primaries) ---------- */
       function buildStrictBauhausPalette(accent){
@@ -376,6 +347,74 @@ document.querySelectorAll('section[data-src]')
       compute(); let resizeRaf=0; window.addEventListener('resize',()=>{cancelAnimationFrame(resizeRaf); resizeRaf=requestAnimationFrame(compute)},{passive:true});
       const startItem=(location.hash && items.find(i=>i.href===location.hash)) || items.find(i=>i.href==='#home'); if(startItem){setActive(startItem.el); setActiveMini(startItem.miniEl); applyTheme(startItem.color)}
       window.addEventListener('hashchange',()=>{const match=items.find(i=>i.href===location.hash); if(match){const t=document.querySelector(match.href); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); showRadial(match.href==="#home")}});
+
+      /* =====================================================================
+         EXTERNAL SECTION LOADER + DEEP-LINK FOCUS (for #cases)
+         - Sideloads /cases.html into #cases .container
+         - Supports deep links: #case/<slug>
+         - Adds in-document highlight style (no extra CSS files)
+      ===================================================================== */
+      async function injectExternalSection(sectionEl){
+        try{
+          const src = sectionEl.getAttribute('data-src');
+          if(!src) return;
+          const into = sectionEl.querySelector('.container') || sectionEl;
+          const res = await fetch(src, {cache: 'no-cache', credentials: 'same-origin'});
+          if(!res.ok) throw new Error(`HTTP ${res.status}`);
+          const html = await res.text();
+          const tpl = document.createElement('template');
+          tpl.innerHTML = html.trim();
+          let picked = tpl.content.querySelector('#cases-fragment')
+                    || tpl.content.querySelector('#cases')
+                    || tpl.content.firstElementChild;
+          if(picked && picked.id === 'cases'){
+            picked = picked.querySelector('.container') || picked;
+          }
+          into.innerHTML = picked ? picked.innerHTML : html;
+        } catch(err){
+          console.error('Cases load failed:', err);
+        }
+      }
+
+      // CSS.escape fallback
+      const CSS_ESCAPE = (window.CSS && typeof window.CSS.escape === 'function')
+        ? window.CSS.escape
+        : (s) => String(s).replace(/[^\w-]/g, m => `\\${m}`);
+
+      // Add a tiny style for highlight state (no extra files)
+      (function ensureHighlightStyles(){
+        if(document.getElementById('case-highlight-style')) return;
+        const style = document.createElement('style');
+        style.id = 'case-highlight-style';
+        style.textContent = `.projects-grid .case[aria-current="true"]{outline:3px dashed var(--bau-ink);filter:brightness(1.05);transform:translateY(-2px)}`;
+        document.head.appendChild(style);
+      })();
+
+      function parseCaseSlugFromHash(){
+        const m = (location.hash||'').match(/^#case\/([A-Za-z0-9._~%-]+)$/);
+        return m ? decodeURIComponent(m[1]) : null;
+      }
+
+      function focusCaseFromHash(){
+        const slug = parseCaseSlugFromHash();
+        if(!slug) return;
+        const sec = document.getElementById('cases');
+        if(!sec) return;
+        const target = sec.querySelector(`.projects-grid .case[data-slug="${CSS_ESCAPE(slug)}"]`);
+        if(!target) return;
+        const color = sec.getAttribute('data-color');
+        if(typeof applyTheme === 'function' && color) applyTheme(color);
+        sec.scrollIntoView({behavior:'smooth', block:'start'});
+        sec.querySelectorAll('.projects-grid .case[aria-current="true"]').forEach(n=>n.removeAttribute('aria-current'));
+        target.setAttribute('aria-current','true');
+      }
+
+      const _loadPromises = Array.from(document.querySelectorAll('section[data-src]')).map(sec => injectExternalSection(sec));
+      Promise.allSettled(_loadPromises).then(() => {
+        focusCaseFromHash();
+      });
+      window.addEventListener('hashchange', () => focusCaseFromHash());
+      /* ===================================================================== */
 
     } catch (err) {
       console.error('Boot error:', err);
