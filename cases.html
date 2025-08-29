@@ -3,23 +3,47 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Case Studies — Fragment</title>
-<!-- NOTE: No styles here. This file is *injected* into index.html and will use its CSS. -->
-<style>/* keep body neutral to avoid flashes when opened directly */body{margin:0;background:transparent;color:inherit}</style>
+<style>
+/* Keep neutral if opened directly */
+body{margin:0;background:transparent;color:inherit}
+/* Light structure for injected cards */
+.projects-grid .case{display:block;padding:1.25rem 1.4rem;border-radius:12px;text-decoration:none;text-align:left;border:none}
+.projects-grid .case .kicker{display:block;text-transform:uppercase;font-family:var(--header);font-size:.8rem;letter-spacing:.06em;opacity:.95}
+.projects-grid .case strong{display:block;font-family:var(--header);font-size:1.1rem;margin-top:.15rem}
+.projects-grid .case .summary{display:block;margin-top:.3rem;font-weight:600;opacity:.92}
+.projects-grid .case .metrics{list-style:none;padding:0;margin:.65rem 0 0;display:flex;gap:.5rem;flex-wrap:wrap}
+.projects-grid .case .metrics li{font-weight:800;padding:.25rem .5rem;border-radius:8px;border:2px solid var(--bau-ink);background:rgba(0,0,0,.06)}
+</style>
 </head>
 <body>
-<!--
-Only edit inside #cases-fragment. The loader in index.html will pull
-*the inner HTML* of this element and place it into #cases .container.
--->
+<!-- Only edit inside #cases-fragment. The loader grabs its innerHTML. -->
 <div id="cases-fragment">
 <div class="container">
 <h2 id="cases-h">Case Studies</h2>
 <div class="projects-grid">
-<!-- Example items — replace with your real content/cards -->
-<button class="case" type="button">Brand Awareness</button>
-<button class="case" type="button">Community Growth</button>
-<button class="case" type="button">Conversion Optimization</button>
-<button class="case" type="button">Creative Campaigns</button>
+<!-- Case A -->
+<a class="case" data-slug="london-trip" href="#case/london-trip" role="button" aria-label="Open case: London Trip">
+<span class="kicker">Community Growth</span>
+<strong>London Trip</strong>
+<span class="summary">On-location content capture and partnership meetings across London; delivered photo/video assets leveraged across social and email.</span>
+<ul class="metrics">
+<li>Live event coverage</li>
+<li>Partnership outreach</li>
+<li>Multi-channel assets</li>
+</ul>
+</a>
+
+<!-- Case B -->
+<a class="case" data-slug="google-ads-impact" href="#case/google-ads-impact" role="button" aria-label="Open case: Google Ads Impact">
+<span class="kicker">Acquisition</span>
+<strong>Google Ads Impact</strong>
+<span class="summary">Geo-targeted search with GSC-informed keywords and GA4 conversion tracking; optimized for high-intent queries.</span>
+<ul class="metrics">
+<li>8.6× ROAS</li>
+<li>GSC keyword mapping</li>
+<li>GA4 conversions</li>
+</ul>
+</a>
 </div>
 </div>
 </div>
