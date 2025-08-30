@@ -1,51 +1,85 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Case Studies — Fragment</title>
-<style>
-/* Keep neutral if opened directly */
-body{margin:0;background:transparent;color:inherit}
-/* Light structure for injected cards */
-.projects-grid .case{display:block;padding:1.25rem 1.4rem;border-radius:12px;text-decoration:none;text-align:left;border:none}
-.projects-grid .case .kicker{display:block;text-transform:uppercase;font-family:var(--header);font-size:.8rem;letter-spacing:.06em;opacity:.95}
-.projects-grid .case strong{display:block;font-family:var(--header);font-size:1.1rem;margin-top:.15rem}
-.projects-grid .case .summary{display:block;margin-top:.3rem;font-weight:600;opacity:.92}
-.projects-grid .case .metrics{list-style:none;padding:0;margin:.65rem 0 0;display:flex;gap:.5rem;flex-wrap:wrap}
-.projects-grid .case .metrics li{font-weight:800;padding:.25rem .5rem;border-radius:8px;border:2px solid var(--bau-ink);background:rgba(0,0,0,.06)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Case Studies — Fragment (sideload)</title>
+  <!-- This file is fetched by index.html and injected into #cases .container.
+       You can also open it directly for a quick preview. -->
+  <style>
+    /* Keep neutral if opened directly */
+    :root{--bau-ink:#111; --ring: 0 0 0 3px rgba(28,126,214,.35)}
+    body{margin:0;background:transparent;color:inherit}
+
+    /* Card layout specifically for injected cases */
+    .projects-grid .case{
+      display:block;
+      padding:0;
+      border-radius:12px;
+      text-decoration:none;
+      text-align:left;
+      border:none;
+      overflow:hidden;
+      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; /* hover */
+    }
+    .projects-grid .case img{
+      display:block;
+      width:100%;
+      aspect-ratio:16/9;
+      object-fit:cover;
+      border-bottom:2px solid var(--bau-ink);
+      transition:transform .35s ease, filter .35s ease; /* hover */
+    }
+    .projects-grid .case .case-title{
+      padding:1rem 1.25rem;
+      font-family:var(--header, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif);
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    /* Hover micro-interactions */
+    .projects-grid .case:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.18)}
+    .projects-grid .case:focus-visible{outline:none;box-shadow:var(--ring)}
+    .projects-grid .case:hover img{transform:scale(1.03);filter:saturate(1.05)}
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .projects-grid .case,
+      .projects-grid .case img{transition:none!important}
+      .projects-grid .case:hover{transform:none;box-shadow:none}
+      .projects-grid .case:hover img{transform:none;filter:none}
+    }
+  </style>
 </head>
 <body>
-<!-- Only edit inside #cases-fragment. The loader grabs its innerHTML. -->
-<div id="cases-fragment">
-<div class="container">
-<h2 id="cases-h">Case Studies</h2>
-<div class="projects-grid">
-<!-- Case A -->
-<a class="case" data-slug="london-trip" href="#case/london-trip" role="button" aria-label="Open case: London Trip">
-<span class="kicker">Community Growth</span>
-<strong>London Trip</strong>
-<span class="summary">On-location content capture and partnership meetings across London; delivered photo/video assets leveraged across social and email.</span>
-<ul class="metrics">
-<li>Live event coverage</li>
-<li>Partnership outreach</li>
-<li>Multi-channel assets</li>
-</ul>
-</a>
+  <!-- The loader in index.html takes the *innerHTML* of #cases-fragment -->
+  <div id="cases-fragment">
+    <div class="container">
+      <h2 id="cases-h">Case Studies</h2>
+      <div class="projects-grid">
+        <!-- Case: London Trip -->
+        <a class="case" href="london-trip.html" aria-label="Open case: London Trip">
+          <img
+            src="https://images.unsplash.com/photo-1488747279002-c8523379faaa?auto=format&fit=crop&w=1600&q=80"
+            alt="Tower Bridge in London at dusk"
+            width="1600" height="900"
+            loading="lazy" decoding="async"
+          />
+          <div class="case-title">London Trip</div>
+        </a>
 
-<!-- Case B -->
-<a class="case" data-slug="google-ads-impact" href="#case/google-ads-impact" role="button" aria-label="Open case: Google Ads Impact">
-<span class="kicker">Acquisition</span>
-<strong>Google Ads Impact</strong>
-<span class="summary">Geo-targeted search with GSC-informed keywords and GA4 conversion tracking; optimized for high-intent queries.</span>
-<ul class="metrics">
-<li>8.6× ROAS</li>
-<li>GSC keyword mapping</li>
-<li>GA4 conversions</li>
-</ul>
-</a>
-</div>
-</div>
-</div>
+        <!-- Case: Google Ads Impact -->
+        <a class="case" href="google-ads-impact.html" aria-label="Open case: Google Ads Impact">
+          <img
+            src="https://images.unsplash.com/photo-1556157382-97eda2f6d469?auto=format&fit=crop&w=1600&q=80"
+            alt="Laptop with charts and analytics on screen"
+            width="1600" height="900"
+            loading="lazy" decoding="async"
+          />
+          <div class="case-title">Google Ads Impact</div>
+        </a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
