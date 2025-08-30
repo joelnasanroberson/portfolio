@@ -4,74 +4,72 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="color-scheme" content="dark light">
-<meta name="description" content="Google Ads Impact case study — Joel N. Roberson">
+<meta name="description" content="Google Ads Impact — Case Study | Joel N. Roberson">
 <title>Google Ads Impact — Case Study | Joel N. Roberson</title>
+<!-- Fonts (same as index) -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://db.onlinewebfonts.com/c/f2b7f17d01f1f14802062ce0574b4d4a?family=Futura+PT" rel="stylesheet">
 <style>
-:root{--bau-ink:#111;--bau-cream:#F4F1E8;--accent:#1C7ED6;--text:#0e0e0e;--muted:rgba(0,0,0,.72);--radius:14px}
-*{box-sizing:border-box} body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bau-cream);color:var(--text)}
+/* THEME TOKENS (match index) */
+:root{
+--bau-black:#0e0e0e; --bau-ink:#111111; --bau-cream:#F4F1E8;
+--bau-red:#E94F37; --bau-blue:#1C7ED6; --bau-blue-light:#4da3f0; --bau-yellow:#F6C90E;
+--header:'Futura PT', sans-serif; --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+--text:#0e0e0e; --text-muted: rgba(0,0,0,.72);
+--ring: 0 0 0 3px rgba(28,126,214,.35);
+--page-bg: var(--bau-cream);
+/* Page accent: BAUHAUS RED */
+--accent: var(--bau-red);
+/* Shapes tuned for red theme */
+--shape-1: var(--bau-red); --shape-2: var(--bau-yellow); --shape-3: var(--bau-blue); --shape-4: var(--bau-red); --shape-ring: var(--bau-blue-light);
+--radius:14px;
+}
+
+/* BASE */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;text-size-adjust:100%}
+body{margin:0;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;min-height:100%;background:var(--page-bg)}
+img{max-width:100%;display:block}
 a{color:inherit}
-header{position:sticky;top:0;background:rgba(255,255,255,.7);backdrop-filter:saturate(120%) blur(4px);border-bottom:2px solid var(--bau-ink);z-index:10}
-.bar{max-width:1100px;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:.75rem}
+:focus-visible{outline:none;box-shadow:var(--ring);border-radius:10px}
+
+header.sticky{position:sticky;top:0;background:rgba(255,255,255,.7);backdrop-filter:saturate(120%) blur(4px);border-bottom:2px solid var(--bau-ink);z-index:10}
+.bar{max-width:1120px;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:.75rem}
 .back{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .7rem;border-radius:999px;border:2px solid var(--bau-ink);text-decoration:none;background:#fff}
-.wrap{max-width:1100px;margin:0 auto;padding:1.25rem 1rem 3rem}
+
+.wrap{max-width:1120px;margin:0 auto;padding:1.25rem 1rem 3rem}
+h1,h2,h3{font-family:var(--header);margin:0}
+h1{font-size:clamp(2rem,5vw,3rem)}
+.tag{font-weight:800;letter-spacing:.02em;color:var(--text-muted)}
+
 .hero{border:2px solid var(--bau-ink);border-radius:var(--radius);overflow:hidden}
-.hero img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
-h1{font-family:'Futura PT',sans-serif;margin:.9rem 0 0;font-size:clamp(2rem,5vw,3rem)}
-.tag{font-weight:800;letter-spacing:.02em;color:var(--muted)}
+.hero img{width:100%;aspect-ratio:16/9;object-fit:cover}
+
 .grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1.25rem}
 @media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}
+
 .card{background:#fff;border:2px solid var(--bau-ink);border-radius:12px;padding:1rem}
-.card h3{font-family:'Futura PT',sans-serif;margin:.2rem 0 .4rem}
-.card ul{margin:.2rem 0 0 1rem}
+.card h3{font-family:var(--header);margin:.2rem 0 .4rem}
 .metrics{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
 .chip{display:inline-block;border:2px solid var(--bau-ink);padding:.25rem .55rem;border-radius:999px;font-weight:800}
-footer{margin-top:2rem;text-align:center;color:var(--muted)}
+
+/* Bauhaus backdrop */
+.bauhaus{position:fixed;inset:0;z-index:-2;pointer-events:none}
+.shape{position:absolute;pointer-events:none}
+.shape.circle,.shape.ring{border-radius:50%}
+.shape.blob{border-radius:42% 58% 50% 50% / 55% 40% 60% 45%}
+.shape.semi{border-radius:50%;clip-path:inset(50% 0 0 0)}
+@keyframes blobMorph{0%{border-radius:42% 58% 50% 50% / 55% 40% 60% 45%}50%{border-radius:58% 42% 47% 53% / 45% 60% 40% 55%}100%{border-radius:42% 58% 50% 50% / 55% 40% 60% 45%}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.shape.blob{animation:blobMorph 16s ease-in-out infinite;filter:url(#liquid);will-change:transform,border-radius}
+.shape.circle{animation:floatY 12s ease-in-out infinite;filter:url(#liquid-soft);will-change:transform}
+
+@media (prefers-reduced-motion: reduce){
+*{scroll-behavior:auto!important}
+.shape.blob,.shape.circle{animation:none!important;filter:none!important}
+}
+
+footer{margin-top:2rem;text-align:center;color:var(--text-muted)}
 </style>
 </head>
-<body>
-<header>
-<div class="bar">
-<a class="back" href="index.html#cases" aria-label="Back to main site">← Back to Cases</a>
-<span class="chip">Acquisition</span>
-</div>
-</header>
-
-<main class="wrap">
-<div class="hero"><img src="https://images.unsplash.com/photo-1556157382-97eda2f6d469?auto=format&fit=crop&w=1600&q=80" alt="Laptop displaying charts and analytics" width="1600" height="900"></div>
-<h1>Google Ads Impact</h1>
-<p class="tag">Geo-targeted search with GSC-informed keywords and GA4 conversion tracking.</p>
-
-<div class="grid">
-<section class="card">
-<h3>Overview</h3>
-<p>Built and optimized a Google Ads program aligned to high-intent search, using Search Console insights to map keywords and GA4 to verify conversions and ROAS.</p>
-<div class="metrics">
-<span class="chip">8.6× ROAS</span>
-<span class="chip">GSC keyword mapping</span>
-<span class="chip">GA4 conversions</span>
-</div>
-</section>
-<aside class="card">
-<h3>Stack</h3>
-<ul>
-<li>Google Ads (Search/Brand)</li>
-<li>Google Analytics 4</li>
-<li>Google Search Console</li>
-<li>Call tracking / CRM</li>
-</ul>
-</aside>
-</div>
-
-<section class="card">
-<h3>Details (placeholder)</h3>
-<p>Replace this section with campaign structure, bidding approach, ad copy samples, and screenshots (remove any sensitive data).</p>
-</section>
-
-<footer>
-<p>© Joel N. Roberson</p>
-</footer>
-</main>
-</body>
 </html>
