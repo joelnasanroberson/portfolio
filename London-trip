@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="London Trip case study — Joel N. Roberson">
+<title>London Trip — Case Study | Joel N. Roberson</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/f2b7f17d01f1f14802062ce0574b4d4a?family=Futura+PT" rel="stylesheet">
+<style>
+:root{--bau-ink:#111;--bau-cream:#F4F1E8;--accent:#1C7ED6;--text:#0e0e0e;--muted:rgba(0,0,0,.72);--radius:14px}
+*{box-sizing:border-box} body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bau-cream);color:var(--text)}
+a{color:inherit}
+header{position:sticky;top:0;background:rgba(255,255,255,.7);backdrop-filter:saturate(120%) blur(4px);border-bottom:2px solid var(--bau-ink);z-index:10}
+.bar{max-width:1100px;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:.75rem}
+.back{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .7rem;border-radius:999px;border:2px solid var(--bau-ink);text-decoration:none;background:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.hero{border:2px solid var(--bau-ink);border-radius:var(--radius);overflow:hidden}
+.hero img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+h1{font-family:'Futura PT',sans-serif;margin:.9rem 0 0;font-size:clamp(2rem,5vw,3rem)}
+.tag{font-weight:800;letter-spacing:.02em;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1.25rem}
+@media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}
+.card{background:#fff;border:2px solid var(--bau-ink);border-radius:12px;padding:1rem}
+.card h3{font-family:'Futura PT',sans-serif;margin:.2rem 0 .4rem}
+.card ul{margin:.2rem 0 0 1rem}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-top:1rem}
+.chip{display:inline-block;border:2px solid var(--bau-ink);padding:.25rem .55rem;border-radius:999px;font-weight:800}
+footer{margin-top:2rem;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+<div class="bar">
+<a class="back" href="index.html#cases" aria-label="Back to main site">← Back to Cases</a>
+<span class="chip">Community Growth</span>
+</div>
+</header>
+
+<main class="wrap">
+<div class="hero"><img src="https://images.unsplash.com/photo-1488747279002-c8523379faaa?auto=format&fit=crop&w=1600&q=80" alt="London skyline with Tower Bridge" width="1600" height="900"></div>
+<h1>London Trip</h1>
+<p class="tag">On-location content capture and partnership meetings across London.</p>
+
+<div class="grid">
+<section class="card">
+<h3>Overview</h3>
+<p>Captured photo/video across key neighborhoods and events; repurposed assets across social and email, supporting community growth and partner outreach.</p>
+</section>
+<aside class="card">
+<h3>Highlights</h3>
+<ul>
+<li>Live event coverage</li>
+<li>Partnership meetings</li>
+<li>Multi-channel deliverables</li>
+</ul>
+</aside>
+</div>
+
+<section class="card">
+<h3>Gallery (placeholders)</h3>
+<div class="gallery">
+<img src="https://images.unsplash.com/photo-1459603677915-a62079ffd002?auto=format&fit=crop&w=1200&q=80" alt="London street" width="1200" height="800">
+<img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80" alt="Underground sign" width="1200" height="800">
+<img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80" alt="Big Ben" width="1200" height="800">
+</div>
+</section>
+
+<footer>
+<p>© Joel N. Roberson</p>
+</footer>
+</main>
+</body>
+</html>
