@@ -76,7 +76,7 @@
     .card p{color:#222;margin:0}
 
     /* Case blocks */
-    .projects-grid .case{border:none;border-radius:12px;font-weight:900;letter-spacing:.02em;box-shadow:none;transition:transform .2s ease}
+    .projects-grid .case{border:none;border-radius:12px;font-weight:900;letter-spacing:.02em;box-shadow:none;transition:transform .2s ease;display:block;text-align:left}
     .projects-grid .case:hover{transform:translateY(-2px)}
     .projects-grid .case:nth-child(1){background:var(--bau-red);color:#fff}
     .projects-grid .case:nth-child(2){background:var(--bau-blue);color:#fff}
@@ -163,7 +163,7 @@
     <div class="header-inner">
       <div class="header-left" aria-hidden="true"></div>
       <a href="#home" class="site-logo" aria-label="Home">
-        <img src="https://github.com/joelnasanroberson/portfolio/blob/main/jr%20portfolio%20logo1.png?raw=true" alt="Joel Roberson logo" width="44" height="44" decoding="async"/>
+        <img src="jr%20portfolio%20logo1.png" alt="Joel Roberson logo" width="44" height="44" decoding="async"/>
       </a>
       <nav id="site-nav" class="site-nav" aria-label="Section navigation"></nav>
     </div>
@@ -207,16 +207,14 @@
       </div>
     </section>
 
-    <!-- NOTE: added data-src="cases.html" to sideload fragment -->
+    <!-- NOTE: side-loads cases.html fragment into this section -->
     <section id="cases" aria-labelledby="cases-h" data-color="#E94F37" data-src="cases.html">
       <div class="container">
         <h2 id="cases-h">Case Studies</h2>
         <div class="projects-grid">
-          <!-- Fallback content (only shown if fetch fails). Safe to leave simple. -->
-          <button class="case" type="button">Brand Awareness</button>
-          <button class="case" type="button">Community Growth</button>
-          <button class="case" type="button">Conversion Optimization</button>
-          <button class="case" type="button">Creative Campaigns</button>
+          <!-- Fallback content (only shown if fetch fails) -->
+          <a class="case" href="london-trip.html">Premium Launch: London Market</a>
+          <a class="case" href="google-ads-impact.html">Search Engine Growth: SEO + Google Ads</a>
         </div>
       </div>
     </section>
@@ -289,7 +287,7 @@
         const {r,g,b}=hexToRgb(color||'#1C7ED6'); const ringAlpha=lightBg?0.22:0.35; root.style.setProperty('--ring',`0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`);
       }
 
-      /* ---------- Cursor (delegated to include dynamic links) ---------- */
+      /* ---------- Cursor ---------- */
       const cursor=document.getElementById('custom-cursor'); const isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0; if(isTouch||prefersReduced){if(cursor)cursor.style.display='none'}else if(cursor){
         document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
         const hoverSel='a,button,.case,.card,.rm-link';
@@ -349,39 +347,28 @@
       window.addEventListener('hashchange',()=>{const match=items.find(i=>i.href===location.hash); if(match){const t=document.querySelector(match.href); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); showRadial(match.href==="#home")}});
 
       /* =====================================================================
-         EXTERNAL SECTION LOADER + DEEP-LINK FOCUS (for #cases)
-         - Sideloads /cases.html into #cases .container
-         - Supports deep links: #case/<slug>
-         - Adds in-document highlight style (no extra CSS files)
+         ROBUST SIDE-LOADER FOR #cases (DOMParser + cache-bust)
       ===================================================================== */
-      async function injectExternalSection(sectionEl){
-        try{
+      async function injectExternalSection(sectionEl) {
+        try {
           const src = sectionEl.getAttribute('data-src');
-          if(!src) return;
+          if (!src) return;
           const into = sectionEl.querySelector('.container') || sectionEl;
-          const res = await fetch(src, {cache: 'no-cache', credentials: 'same-origin'});
-          if(!res.ok) throw new Error(`HTTP ${res.status}`);
+          const url = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now();
+          const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const html = await res.text();
-          const tpl = document.createElement('template');
-          tpl.innerHTML = html.trim();
-          let picked = tpl.content.querySelector('#cases-fragment')
-                    || tpl.content.querySelector('#cases')
-                    || tpl.content.firstElementChild;
-          if(picked && picked.id === 'cases'){
-            picked = picked.querySelector('.container') || picked;
-          }
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          let picked = doc.getElementById('cases-fragment') || doc.getElementById('cases') || doc.body;
+          if (picked && picked.id === 'cases') picked = picked.querySelector('.container') || picked;
           into.innerHTML = picked ? picked.innerHTML : html;
-        } catch(err){
-          console.error('Cases load failed:', err);
-        }
+        } catch (err) { console.error('Cases load failed:', err); }
       }
 
       // CSS.escape fallback
-      const CSS_ESCAPE = (window.CSS && typeof window.CSS.escape === 'function')
-        ? window.CSS.escape
-        : (s) => String(s).replace(/[^\w-]/g, m => `\\${m}`);
+      const CSS_ESCAPE = (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape : (s) => String(s).replace(/[^\w-]/g, m => `\\${m}`);
 
-      // Add a tiny style for highlight state (no extra files)
+      // Highlight style for deep link focus
       (function ensureHighlightStyles(){
         if(document.getElementById('case-highlight-style')) return;
         const style = document.createElement('style');
@@ -394,27 +381,20 @@
         const m = (location.hash||'').match(/^#case\/([A-Za-z0-9._~%-]+)$/);
         return m ? decodeURIComponent(m[1]) : null;
       }
-
       function focusCaseFromHash(){
-        const slug = parseCaseSlugFromHash();
-        if(!slug) return;
-        const sec = document.getElementById('cases');
-        if(!sec) return;
+        const slug = parseCaseSlugFromHash(); if(!slug) return;
+        const sec = document.getElementById('cases'); if(!sec) return;
         const target = sec.querySelector(`.projects-grid .case[data-slug="${CSS_ESCAPE(slug)}"]`);
         if(!target) return;
-        const color = sec.getAttribute('data-color');
-        if(typeof applyTheme === 'function' && color) applyTheme(color);
+        const color = sec.getAttribute('data-color'); if(typeof applyTheme === 'function' && color) applyTheme(color);
         sec.scrollIntoView({behavior:'smooth', block:'start'});
         sec.querySelectorAll('.projects-grid .case[aria-current="true"]').forEach(n=>n.removeAttribute('aria-current'));
         target.setAttribute('aria-current','true');
       }
 
       const _loadPromises = Array.from(document.querySelectorAll('section[data-src]')).map(sec => injectExternalSection(sec));
-      Promise.allSettled(_loadPromises).then(() => {
-        focusCaseFromHash();
-      });
+      Promise.allSettled(_loadPromises).then(() => { focusCaseFromHash(); });
       window.addEventListener('hashchange', () => focusCaseFromHash());
-      /* ===================================================================== */
 
     } catch (err) {
       console.error('Boot error:', err);
