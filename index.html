@@ -1,4 +1,4 @@
-<!-- /index.html — Bauhaus variant, strict primaries, compact (stable, GSAP-free) -->
+<!-- index.html — Bauhaus variant with style‑aware side‑load for cases.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,16 +17,12 @@
        THEME TOKENS (Bauhaus)
     ------------------------------ */
     :root{
-      /* Core palette */
       --bau-black:#0e0e0e; --bau-ink:#111111; --bau-cream:#F4F1E8;
       --bau-red:#E94F37; --bau-blue:#1C7ED6; --bau-blue-light:#4da3f0; --bau-yellow:#F6C90E;
-      /* Typography */
       --header:'Futura PT', sans-serif; --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      /* UI tokens */
       --text:#f7f7f7; --text-muted: rgba(247,247,247,.82); --accent: var(--bau-blue);
       --ring: 0 0 0 3px rgba(28,126,214,.35);
       --page-bg: var(--bau-black); --overlay-bg: rgba(0,0,0,.45);
-      /* Reactive shape colors (set in JS; safe defaults) */
       --shape-1: var(--bau-blue); --shape-2: var(--bau-yellow); --shape-3: var(--bau-red); --shape-4: var(--bau-blue); --shape-ring: var(--bau-blue-light);
       --radius:14px;
     }
@@ -76,7 +72,7 @@
     .card p{color:#222;margin:0}
 
     /* Case blocks */
-    .projects-grid .case{border:none;border-radius:12px;font-weight:900;letter-spacing:.02em;box-shadow:none;transition:transform .2s ease;display:block;text-align:left}
+    .projects-grid .case{border:none;border-radius:12px;font-weight:900;letter-spacing:.02em;box-shadow:none;transition:transform .2s ease;display:block;text-align:left;padding:1.25rem}
     .projects-grid .case:hover{transform:translateY(-2px)}
     .projects-grid .case:nth-child(1){background:var(--bau-red);color:#fff}
     .projects-grid .case:nth-child(2){background:var(--bau-blue);color:#fff}
@@ -92,7 +88,6 @@
 
     /* ------------------------------ RADIAL MENU ------------------------------ */
     #radial-menu-wrap{position:fixed;inset:0;z-index:10990;display:grid;place-items:center;pointer-events:none;opacity:1;transform:scale(1);transition:opacity .28s ease,transform .28s ease}
-    /* Ensure FAB/menu clickable while wrapper blocks events */
     #radial-menu-wrap .radial-menu, #radial-menu-wrap .radial-fab{pointer-events:auto}
     #radial-menu-wrap[data-visible="false"]{opacity:0;transform:scale(.96);pointer-events:none}
     .radial-menu{position:relative;width:520px;height:520px;pointer-events:none}
@@ -102,7 +97,6 @@
     @keyframes ringSpin{to{transform:rotate(360deg)}}
     .rm-link{position:absolute;top:50%;left:50%;transform-origin:50% 50%;color:var(--text);text-decoration:none;font-family:var(--header);font-weight:900;letter-spacing:.04em;transition:color .2s ease,opacity .2s ease,filter .2s ease,transform .18s ease;outline:none;white-space:nowrap;text-transform:uppercase}
     .rm-hover{position:absolute;top:50%;left:50%;opacity:0;height:2.1rem;border-right:6px solid var(--accent);transition:opacity .2s ease,border-color .2s ease,transform .18s ease;transform-origin:0 50%}
-    .rm-link[aria-current="page"]{color:var(--text)}
     .rm-link[aria-current="page"]+.rm-hover{opacity:1;border-right-color:var(--accent)}
     .shrink .radial-menu{transform:scale(.9);transition:transform .25s ease}
     .radial-fab{position:fixed;bottom:18px;right:18px;width:56px;height:56px;border-radius:999px;border:2px solid var(--bau-ink);background:var(--bau-cream);color:var(--bau-ink);font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -323,7 +317,7 @@
 
       function linkOver(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; const blue=css('--bau-blue','#1C7ED6').toLowerCase(); const blueLight=css('--bau-blue-light','#4da3f0'); const color=(a.dataset.color||'#1C7ED6').toLowerCase(); const hoverColor=(color===blue)?blueLight:(a.dataset.color||'#1C7ED6'); setTransform(a,(obj.baseTransform||'')+' translateX(10px)'); if(obj.hover){obj.hover.style.opacity=1; obj.hover.style.borderRightColor=hoverColor} if(ring) ring.style.transform='rotate(20deg)'}
       function linkOut(e){const a=e.currentTarget; const obj=linkMap.get(a); if(!obj)return; setTransform(a,obj.baseTransform||''); if(obj.hover)obj.hover.style.opacity=0; if(ring) ring.style.transform='rotate(0deg)'}
-      function setActive(el){items.forEach(i=>i.el&&i.el.removeAttribute('aria-current')); if(el)el.setAttribute('aria-current','page')}
+      function setActive(el){items.forEach(i=>{ if(i.el) i.el.removeAttribute('aria-current') }); if(el)el.setAttribute('aria-current','page')}
 
       function setCollapsed(v){if(menu)menu.dataset.collapsed=String(v); if(fab){fab.setAttribute('aria-expanded',String(!v)); fab.textContent=v?'☰':'×'}}
       let collapsed=false; setCollapsed(collapsed); if(fab) fab.addEventListener('click',()=>{collapsed=!collapsed; setCollapsed(collapsed)});
@@ -347,7 +341,8 @@
       window.addEventListener('hashchange',()=>{const match=items.find(i=>i.href===location.hash); if(match){const t=document.querySelector(match.href); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); setActive(match.el); setActiveMini(match.miniEl); applyTheme(match.color); showRadial(match.href==="#home")}});
 
       /* =====================================================================
-         ROBUST SIDE-LOADER FOR #cases (DOMParser + cache-bust)
+         STYLE-AWARE SIDE-LOADER FOR #cases (DOMParser + cache-bust)
+         - Also imports <style id="cases-fragment-styles"> (if present)
       ===================================================================== */
       async function injectExternalSection(sectionEl) {
         try {
@@ -359,9 +354,31 @@
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const html = await res.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
-          let picked = doc.getElementById('cases-fragment') || doc.getElementById('cases') || doc.body;
-          if (picked && picked.id === 'cases') picked = picked.querySelector('.container') || picked;
-          into.innerHTML = picked ? picked.innerHTML : html;
+
+          let nodeToUse;
+          const tpl = doc.getElementById('cases-fragment');
+          if (tpl && 'content' in tpl) {
+            nodeToUse = tpl.content.cloneNode(true);
+          } else {
+            const sec = doc.getElementById('cases') || doc.body;
+            nodeToUse = (sec.id === 'cases' ? (sec.querySelector('.container') || sec) : sec).cloneNode(true);
+          }
+
+          const tmp = document.createElement('div');
+          tmp.appendChild(nodeToUse);
+
+          const fragStyle = tmp.querySelector('#cases-fragment-styles');
+          if (fragStyle && !document.getElementById('cases-fragment-styles')) {
+            document.head.appendChild(fragStyle.cloneNode(true));
+          }
+          if (fragStyle) fragStyle.remove();
+
+          const headStyle = doc.head && doc.head.querySelector('#cases-fragment-head-styles');
+          if (headStyle && !document.getElementById('cases-fragment-head-styles')) {
+            document.head.appendChild(headStyle.cloneNode(true));
+          }
+
+          into.innerHTML = tmp.innerHTML;
         } catch (err) { console.error('Cases load failed:', err); }
       }
 
