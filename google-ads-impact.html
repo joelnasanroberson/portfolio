@@ -1,22 +1,26 @@
+<!-- google-ads-impact.html — Search Engine Growth: SEO + Google Ads Overhaul (standalone, self‑styled) -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Search Engine Growth: SEO + Google Ads Overhaul — built from zero with GA4, GSC, intent structure; 3,453 signups tracked." />
-  <meta name="theme-color" content="#111827" />
+  <meta name="description" content="Search Engine Growth: SEO + Google Ads Overhaul — GA4 + GSC foundation, intent structure, negatives hygiene; ~655k impressions, ~23k clicks, 3,453 signups; Aug ’25 CTR ~5.7%." />
+  <meta name="theme-color" content="#0f172a" />
   <meta property="og:title" content="Search Engine Growth — SEO + Google Ads Overhaul" />
-  <meta property="og:description" content="~655k impressions, ~23k clicks (CTR ~3.5%), $9.9k spend (CPC ~$0.43), 3,453 signups. Aug ’25 CTR ~5.7%." />
+  <meta property="og:description" content="Built a sustainable search operating system: GA4 + GSC, modern Google Ads, landing loop. ~655k impressions, ~23k clicks, 3,453 signups." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="jr%20portfolio%20logo1.png" />
   <title>Search Engine Growth — SEO + Google Ads Overhaul</title>
   <style>
-    :root{--bg:#0b0c0f;--surface:#111827;--muted:#9ca3af;--text:#e5e7eb;--brand:#60a5fa;--accent:#34d399;--card:#0f172a;--border:#1f2937;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:16px;--radius-lg:20px;--container:1200px}
-    @media (prefers-color-scheme: light){:root{--bg:#fafafa;--surface:#ffffff;--muted:#6b7280;--text:#111827;--brand:#2563eb;--accent:#059669;--card:#ffffff;--border:#e5e7eb;--shadow:0 10px 25px rgba(0,0,0,.08)}}
-    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,var(--bg),var(--surface));color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
-    a{color:inherit;text-decoration:none}img{max-width:100%;display:block;height:auto}
+    :root{--bg:#0b0c0f;--surface:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--brand:#60a5fa;--brand-600:#2563eb;--accent:#34d399;--card:#0b1220;--border:#1f2937;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:16px;--radius-lg:20px;--container:1100px}
+    @media (prefers-color-scheme: light){:root{--bg:#fafafa;--surface:#ffffff;--muted:#6b7280;--text:#111827;--brand:#2563eb;--brand-600:#1d4ed8;--accent:#059669;--card:#ffffff;--border:#e5e7eb;--shadow:0 10px 25px rgba(0,0,0,.08)}}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),var(--surface));color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block;height:auto}
     .container{max-width:var(--container);margin:0 auto;padding:0 1rem}
-    header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(120%) blur(8px);background:color-mix(in oklab,var(--surface) 75%, transparent);border-bottom:1px solid var(--border)}
+
+    header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(120%) blur(8px);background:color-mix(in oklab,var(--surface) 82%, transparent);border-bottom:1px solid var(--border)}
     .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:64px}
     .brand{display:flex;align-items:center;gap:.75rem;font-weight:700}
     .brand img{width:36px;height:36px;border-radius:50%;box-shadow:var(--shadow)}
@@ -24,124 +28,196 @@
     .menu a{padding:.5rem .75rem;border-radius:999px;color:var(--muted);font-weight:600}
     .menu a[aria-current="page"],.menu a:hover{color:var(--text);background:color-mix(in oklab,var(--brand) 18%, transparent)}
     .menu-toggle{display:none}
-    main{padding:clamp(2.5rem,6vw,4rem) 0}
-    h1{font-size:clamp(1.8rem,3.5vw,2.2rem);line-height:1.2;margin:0 0 .25rem}
-    .intro{color:var(--muted);max-width:70ch}
-    .hero{padding:2rem 0 1rem;border-bottom:1px solid var(--border)}
-    .kpis{display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.75rem}
-    .tag{background:color-mix(in oklab,var(--accent) 18%, transparent);border:1px solid var(--border);padding:.35rem .55rem;border-radius:999px;font-size:.85rem;font-weight:700;color:color-mix(in oklab,var(--accent) 80%, var(--text))}
-    .article{display:grid;gap:1rem;margin-top:1.25rem}
-    section.block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:1.25rem}
-    section.block h2{margin:.25rem 0 .5rem;font-size:1.25rem}
-    section.block h3{margin:1rem 0 .35rem;font-size:1.05rem}
-    section.block p, section.block li{max-width:75ch}
-    .actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:999px;border:1px solid var(--border);font-weight:700}
-    .btn.primary{background:var(--brand);color:white;border-color:transparent}
-    .btn.secondary{background:transparent;color:var(--text)}
-    footer{padding:2rem 0;color:var(--muted)}
     @media(max-width:860px){.menu{display:none;position:absolute;right:1rem;top:64px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;flex-direction:column;box-shadow:var(--shadow)}.menu.open{display:flex}.menu-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text)}}
+
+    main{padding:clamp(2.2rem,5vw,3.2rem) 0}
+    .hero{padding:1rem 0 0}
+    .title{font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.2;margin:.25rem 0 .5rem}
+    .kicker{color:var(--muted);font-weight:700}
+    .lead{color:var(--text);background:color-mix(in oklab,var(--brand) 10%, transparent);border:1px solid var(--border);padding:1rem;border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    .meta{display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin:1rem 0}
+    .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;border-radius:999px;border:1px solid var(--border);background:color-mix(in oklab,var(--accent) 18%, transparent);font-weight:700;font-size:.88rem;color:color-mix(in oklab,var(--accent) 80%, var(--text))}
+
+    .kpi-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem;margin-top:1rem}
+    @media(max-width:720px){.kpi-wrap{grid-template-columns:1fr}}
+    .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+    .kpi-card h2{margin:.9rem 1.1rem .25rem;font-size:1.1rem;color:var(--muted)}
+    .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;padding:0 1.1rem 1.1rem}
+    @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+    .kpi{border:1px solid var(--border);border-radius:14px;padding:.75rem .9rem;background:color-mix(in oklab,var(--brand) 10%, transparent)}
+    .kpi strong{display:block;font-size:1.2rem}
+
+    .grid{display:grid;grid-template-columns:3fr 2fr;gap:1.25rem;margin-top:1.2rem}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+    .section{padding:1rem 1.1rem}
+    .section h2{margin:.25rem 0 .5rem;font-size:1.2rem}
+    .prose p,.prose li{max-width:75ch}
+
+    .actions{display:flex;gap:.75rem;flex-wrap:wrap;padding:1rem 0}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:999px;border:1px solid var(--border);font-weight:700}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+    .btn.secondary{background:transparent;color:var(--text)}
+
+    footer{padding:2rem 0;color:var(--muted)}
   </style>
 </head>
 <body>
-<header>
-  <div class="container nav" role="navigation" aria-label="Main">
-    <a class="brand" href="index.html"><img src="jr%20portfolio%20logo1.png" alt="JR logo" /><span>Joel Roberson</span></a>
-    <button class="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Toggle menu">☰</button>
-    <nav id="menu" class="menu">
-      <a href="index.html">Home</a>
-      <a href="cases.html">Cases</a>
-      <a href="#main">Top</a>
-    </nav>
-  </div>
-</header>
-
-<main id="main">
-  <div class="container hero">
-    <h1>Search Engine Growth: SEO + Google Ads Overhaul</h1>
-    <p class="intro">Introduced modern SEO/SEM and Google Ads from zero, established measurement, and built a search operating system the team can sustain. Results: ~655k impressions, ~23k clicks (CTR ~3.5%), $9.9k spend (CPC ~$0.43), and <strong>3,453 membership signups</strong> tracked as conversions. Aug ’25 CTR ≈ <strong>5.7%</strong> (CPC ~$0.61).</p>
-    <div class="kpis">
-      <span class="tag">~655k impressions</span>
-      <span class="tag">~23k clicks</span>
-      <span class="tag">3,453 signups</span>
-      <span class="tag">CPC ~$0.43 (all‑time)</span>
-      <span class="tag">CTR ~5.7% (Aug ’25)</span>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="index.html"><img src="jr%20portfolio%20logo1.png" alt="JR logo" /><span>Joel Roberson</span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Toggle menu">☰</button>
+      <nav id="menu" class="menu">
+        <a href="index.html">Home</a>
+        <a href="cases.html">Cases</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
     </div>
-    <div class="actions">
-      <a class="btn primary" href="cases.html">← Back to Cases</a>
-      <a class="btn secondary" href="index.html#contact">Contact</a>
+  </header>
+
+  <main>
+    <div class="container hero">
+      <div class="kicker">Case Study 02</div>
+      <h1 class="title">Search Engine Growth: SEO + Google Ads Overhaul</h1>
+      <p class="lead">Introduced modern SEO/SEM and Google Ads from zero, put measurement in place, and built a sustainable search operating system. Results across the analyzed period: <strong>~655,280 impressions</strong>, <strong>~23,000 clicks</strong> (CTR ~3.5%), <strong>$9,900 spend</strong> (CPC ~$0.43), and <strong>3,453 membership signups</strong>. In <strong>Aug ’25</strong>, CTR rose to ~5.7% (CPC ~$0.61).</p>
+      <div class="meta">
+        <span class="chip">GA4 + GSC</span>
+        <span class="chip">Google Ads</span>
+        <span class="chip">SEO Fundamentals</span>
+        <span class="chip">Intent Structure</span>
+        <span class="chip">Negatives Hygiene</span>
+        <span class="chip">Remarketing</span>
+      </div>
+
+      <div class="kpi-wrap">
+        <section class="kpi-card">
+          <h2>All‑Time</h2>
+          <div class="kpis">
+            <div class="kpi"><strong>~655k</strong><span>Impressions</span></div>
+            <div class="kpi"><strong>~23k</strong><span>Clicks</span></div>
+            <div class="kpi"><strong>~3.5%</strong><span>CTR</span></div>
+            <div class="kpi"><strong>$9.9k</strong><span>Spend</span></div>
+            <div class="kpi"><strong>$0.43</strong><span>CPC</span></div>
+            <div class="kpi"><strong>3,453</strong><span>Signups</span></div>
+          </div>
+        </section>
+        <section class="kpi-card">
+          <h2>Aug ’25</h2>
+          <div class="kpis">
+            <div class="kpi"><strong>20,675</strong><span>Impressions</span></div>
+            <div class="kpi"><strong>1,180</strong><span>Clicks</span></div>
+            <div class="kpi"><strong>~5.7%</strong><span>CTR</span></div>
+            <div class="kpi"><strong>$723.43</strong><span>Spend</span></div>
+            <div class="kpi"><strong>$0.61</strong><span>CPC</span></div>
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
 
-  <div class="container article">
-    <section class="block">
-      <h2>Context & Goal</h2>
-      <ul>
-        <li><strong>Starting point:</strong> No contemporary SEO/SEM practice; no active Google Ads; limited tagging.</li>
-        <li><strong>Objective:</strong> Make the brand consistently visible on search, capture intent efficiently, and create a measurement spine the org can trust.</li>
-      </ul>
-    </section>
+    <div class="container grid">
+      <article class="card prose">
+        <div class="section">
+          <h2 id="context">Context &amp; Goal</h2>
+          <ul>
+            <li><strong>Starting point:</strong> No contemporary SEO/SEM practice; no active Google Ads; limited tagging.</li>
+            <li><strong>Objective:</strong> Make the brand consistently visible on search, capture intent efficiently, and create a measurement spine the org can trust.</li>
+          </ul>
+        </div>
 
-    <section class="block">
-      <h2>Approach</h2>
-      <ul>
-        <li><strong>Measurement foundation:</strong> GA4, a clean UTM taxonomy, and clear conversion definitions; Google Search Console for query/index health; weekly dashboards and monthly readouts.</li>
-        <li><strong>SEO fundamentals:</strong> Keyword map → priority on‑page fixes → internal linking; branded search improved to average #2.</li>
-        <li><strong>Google Ads from scratch:</strong> Intent‑based campaign/ad‑group structure, disciplined match types, a negative keyword library, remarketing audiences, and ad extensions/sitelinks.</li>
-        <li><strong>Creative ↔ landing loop:</strong> Headlines aligned to intent, proof above the fold, and reduced form friction; iterative testing to keep only what wins.</li>
-      </ul>
-    </section>
+        <div class="section">
+          <h2 id="approach">Approach</h2>
+          <ul>
+            <li><strong>Measurement foundation:</strong> GA4, a clean UTM taxonomy, clear conversion definitions; Google Search Console for query/index health; weekly dashboards and monthly readouts.</li>
+            <li><strong>SEO fundamentals:</strong> Keyword map → priority on‑page fixes → internal linking; branded search improved to average <strong>#2</strong>.</li>
+            <li><strong>Google Ads from scratch:</strong> Intent‑based campaign/ad‑group structure, disciplined match types, a negative keyword library, remarketing audiences, and ad extensions/sitelinks.</li>
+            <li><strong>Creative ↔ landing loop:</strong> Headlines aligned to intent, proof above the fold, and reduced form friction; iterative testing to keep only what wins.</li>
+          </ul>
+        </div>
 
-    <section class="block">
-      <h2>Implementation Highlights</h2>
-      <ul>
-        <li>Ongoing Search Terms hygiene to cut waste and protect CPC.</li>
-        <li>Audience layering (remarketing; compliant email seeds), geo/device adjustments where performance diverged.</li>
-        <li>Copy frameworks tailored to intent (e.g., “Book more auditions,” “Level up your reps,” “From NYC to London”) with matching page sections.</li>
-      </ul>
-    </section>
+        <div class="section">
+          <h2 id="highlights">Implementation Highlights</h2>
+          <ul>
+            <li>Ongoing Search Terms hygiene to cut waste and protect CPC.</li>
+            <li>Audience layering (remarketing; compliant email seeds), geo/device adjustments where performance diverged.</li>
+            <li>Copy frameworks tailored to intent (e.g., “Book more auditions,” “Level up your reps,” “From NYC to London”) with matching page sections.</li>
+          </ul>
+        </div>
 
-    <section class="block">
-      <h2>Outcomes</h2>
-      <ul>
-        <li>All‑time: ~655,280 impressions • ~23,000 clicks (CTR ~3.5%) • $9,900 spend (CPC ~$0.43) • 3,453 membership signups (tracked conversions).</li>
-        <li>Recent month (Aug ’25): 20,675 impressions • 1,180 clicks (CTR ~5.7%) • $723.43 spend (CPC ~$0.61).</li>
-        <li>Durable assets: tagging standards, negative‑keyword hygiene, Search Console cadence, audience segments, and a test‑and‑learn roadmap.</li>
-      </ul>
-    </section>
+        <div class="section">
+          <h2 id="outcomes">Outcomes</h2>
+          <ul>
+            <li>All‑time: ~655k impressions • ~23k clicks (CTR ~3.5%) • $9.9k spend (CPC ~$0.43) • 3,453 membership signups (tracked conversions).</li>
+            <li>Aug ’25: 20,675 impressions • 1,180 clicks (CTR ~5.7%) • $723.43 spend (CPC ~$0.61).</li>
+            <li>Durable assets left behind: tagging standards, negative‑keyword hygiene, Search Console cadence, audience segments, and a test‑and‑learn roadmap.</li>
+          </ul>
+        </div>
 
-    <section class="block">
-      <h2>Commercial Lens</h2>
-      <p>With conversions defined as membership signups, and typical member spend ranging $1,000–$50,000, the observed cost per signup ≈ <strong>$2.87</strong> (i.e., $9,900/3,453) represents unusually efficient acquisition. Priority going forward: keep lead quality and attribution clarity tight so performance reflects true revenue, not micro‑events.</p>
-    </section>
+        <div class="section">
+          <h2 id="commercial">Commercial Lens</h2>
+          <p>“Conversions” = membership signups. Member spend ranges from $1,000–$50,000. With an average cost per signup ≈ <strong>$2.87</strong> ($9,900/3,453), acquisition efficiency was unusually strong; realized ROI depends on the final mix of member spend within that range.</p>
+        </div>
 
-    <section class="block">
-      <h2>What I’d Do Next</h2>
-      <ul>
-        <li>Tighten query quality: Expand negatives; pin exact on proven terms; rebalance phrase/broad.</li>
-        <li>Bid strategy: After traffic cleanup, test tCPA or Max Conversions with guardrails.</li>
-        <li>Conversion hygiene: Elevate primary conversions (signups); move micro‑events to secondary tracking where relevant.</li>
-        <li>Landing pages: Continue headline and proof‑block tests; monitor form friction and time‑to‑apply.</li>
-      </ul>
-      <p class="intro" style="margin-top:.5rem">Capabilities: Google Ads • GA4 • Google Search Console • UTM tagging • Audience/remarketing • Landing page testing • Intent‑based copy</p>
-    </section>
+        <div class="section">
+          <h2 id="next">What I’d Do Next</h2>
+          <ul>
+            <li>Tighten query quality: expand negatives; pin exact on proven terms; rebalance phrase/broad.</li>
+            <li>Bid strategy: after traffic cleanup, test tCPA or Max Conversions with guardrails.</li>
+            <li>Conversion hygiene: elevate primary conversions (signups); move micro‑events to secondary tracking where relevant.</li>
+            <li>Landing pages: continue headline and proof‑block tests; monitor form friction and time‑to‑apply.</li>
+          </ul>
+          <p class="kicker">Capabilities — Google Ads • GA4 • Google Search Console • UTM tagging • Audience/remarketing • Landing page testing • Intent‑based copy frameworks</p>
+        </div>
 
-    <section class="block">
-      <h2>Get in touch</h2>
-      <p>Want this kind of durable search growth? <a href="mailto:joelnasanroberson@gmail.com">Email me</a> or call <a href="tel:+19047131424">(904) 713-1424</a>.</p>
-      <div class="actions"><a class="btn primary" href="cases.html">Back to Cases</a><a class="btn secondary" href="index.html#contact">Contact</a></div>
-    </section>
-  </div>
-</main>
+        <div class="section actions">
+          <a class="btn primary" href="cases.html">← Back to Cases</a>
+          <a class="btn secondary" href="index.html">Home</a>
+        </div>
+      </article>
 
-<footer>
-  <div class="container">
-    <small>© <span id="y"></span> Joel Roberson. All rights reserved.</small>
-  </div>
-</footer>
-<script>
-  const t=document.querySelector('.menu-toggle');const m=document.getElementById('menu');t?.addEventListener('click',()=>{const o=m.classList.toggle('open');t.setAttribute('aria-expanded',String(o))});
-  document.getElementById('y').textContent=new Date().getFullYear();
-</script>
+      <aside class="card">
+        <div class="section">
+          <h2>Highlights</h2>
+          <ul>
+            <li>Full measurement spine (GA4 + GSC) with weekly dashboards.</li>
+            <li>Intent‑based account structure with disciplined match types.</li>
+            <li>Negative keyword library and remarketing audiences.</li>
+          </ul>
+        </div>
+        <div class="section">
+          <h2>Channels &amp; Tools</h2>
+          <ul>
+            <li>Google Ads (Search, extensions, audiences)</li>
+            <li>GA4, Google Search Console</li>
+            <li>UTM tagging standards</li>
+            <li>Landing page testing loop</li>
+          </ul>
+        </div>
+        <div class="section">
+          <h2>Contact</h2>
+          <p>Want to modernize your search engine ops? Let’s chat.</p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:joelnasanroberson@gmail.com">Email Joel</a>
+            <a class="btn secondary" href="tel:+19047131424">Call (904) 713‑1424</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>© <span id="y"></span> Joel Roberson. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script>
+    const toggle=document.querySelector('.menu-toggle');
+    const menu=document.getElementById('menu');
+    toggle?.addEventListener('click',()=>{const open=menu.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});
+    document.getElementById('y').textContent=new Date().getFullYear();
+  </script>
 </body>
 </html>
