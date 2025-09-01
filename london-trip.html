@@ -1,49 +1,47 @@
-<!-- london-trip.html — Premium Launch: London Market for Actors (standalone, Bauhaus palette via hex-only changes) -->
+<!-- london-trip.html — Premium Launch: London Market for Actors (standalone, Bauhaus palette, contrast-fixed) -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Premium Launch: London Market for Actors — 90 enrollments, $247,500 revenue. Owned‑channel GTM, proof‑forward funnel, SMS cadence." />
-  <!-- Use Bauhaus red for the browser theme color -->
+  <meta name="description" content="Premium Launch: London Market for Actors — 90 enrollments, $247,500 revenue. Owned-channel GTM, proof-forward funnel, SMS cadence." />
+  <!-- Bauhaus red as browser theme color -->
   <meta name="theme-color" content="#E94F37" />
   <meta property="og:title" content="Premium Launch — London Market for Actors" />
-  <meta property="og:description" content="90 enrollments, $247,500 revenue. Members‑only premium program; proof‑forward funnel; email/SMS sequence." />
+  <meta property="og:description" content="90 enrollments, $247,500 revenue. Members-only premium program; proof-forward funnel; email/SMS sequence." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="jr%20portfolio%20logo1.png" />
   <title>Premium Launch — London Market for Actors</title>
   <style>
     /* =============================
-       Bauhaus color swap (hex-only)
-       Core tokens mapped to index.html palette
-       - Black / Ink / Cream / Red / Blue / Yellow
-    ============================== */
+       Bauhaus color mapping (hex-only)
+       ============================= */
     :root{
-      /* Dark theme (default) */
-      --bg:#0e0e0e;            /* bau-black */
-      --surface:#111111;       /* bau-ink */
-      --muted:#F4F1E8;        /* bau-cream used for muted accents on dark */
-      --text:#f7f7f7;         /* light text on dark */
-      --brand:#E94F37;        /* bau-red (page primary) */
-      --brand-600:#E94F37;    /* same red (no scale needed) */
-      --accent:#F6C90E;       /* bau-yellow (chips/accent) */
-      --card:#F4F1E8;         /* bau-cream cards */
-      --border:#111111;       /* bau-ink borders */
+      /* Dark theme defaults (page body) */
+      --bg:#0e0e0e;          /* bau-black */
+      --surface:#111111;     /* bau-ink */
+      --muted:#F4F1E8;       /* cream as muted on dark */
+      --text:#f7f7f7;        /* light text on dark */
+      --brand:#E94F37;       /* bau-red (primary) */
+      --brand-600:#E94F37;   /* same red */
+      --accent:#F6C90E;      /* bau-yellow */
+      --card:#F4F1E8;        /* cream cards */
+      --border:#111111;      /* ink borders */
       --shadow:0 10px 25px rgba(0,0,0,.35);
       --radius:16px; --radius-lg:20px; --container:1100px;
     }
     @media (prefers-color-scheme: light){
       :root{
-        /* Light theme (Bauhaus, with cream background and ink text) */
-        --bg:#F4F1E8;        /* bau-cream */
-        --surface:#FFFFFF;   /* white surface */
-        --muted:#6b7280;     /* neutral text hint (kept readable) */
-        --text:#111111;      /* bau-ink */
-        --brand:#E94F37;     /* bau-red */
-        --brand-600:#E94F37; /* bau-red */
-        --accent:#1C7ED6;    /* bau-blue as secondary accent on light */
-        --card:#FFFFFF;      /* white cards on cream bg */
-        --border:#111111;    /* bau-ink */
+        /* Light theme (printy/cream) */
+        --bg:#F4F1E8;      /* cream */
+        --surface:#FFFFFF; /* white surfaces */
+        --muted:#6b7280;   /* neutral muted */
+        --text:#111111;    /* ink */
+        --brand:#E94F37;   /* red */
+        --brand-600:#E94F37;
+        --accent:#1C7ED6;  /* blue accent in light */
+        --card:#FFFFFF;    /* white card on cream page */
+        --border:#111111;  /* ink */
         --shadow:0 10px 25px rgba(0,0,0,.10);
       }
     }
@@ -61,11 +59,15 @@
     .brand img{width:36px;height:36px;border-radius:50%;box-shadow:var(--shadow)}
     .menu{display:flex;align-items:center;gap:1rem}
     .menu a{padding:.5rem .75rem;border-radius:999px;color:var(--muted);font-weight:600}
-    .menu a[aria-current="page"], .menu a:hover{color:var(--text);background:color-mix(in oklab,var(--brand) 18%, transparent)}
+    .menu a[aria-current="page"],.menu a:hover{color:var(--text);background:color-mix(in oklab,var(--brand) 18%, transparent)}
     .menu-toggle{display:none}
-    @media(max-width:860px){.menu{display:none;position:absolute;right:1rem;top:64px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;flex-direction:column;box-shadow:var(--shadow)} .menu.open{display:flex} .menu-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text)}}
+    @media(max-width:860px){
+      .menu{display:none;position:absolute;right:1rem;top:64px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;flex-direction:column;box-shadow:var(--shadow)}
+      .menu.open{display:flex}
+      .menu-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+    }
 
-    main{padding: clamp(2.2rem, 5vw, 3.2rem) 0}
+    main{padding:clamp(2.2rem,5vw,3.2rem) 0}
     .hero{padding:1rem 0 0}
     .title{font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.2;margin:.25rem 0 .5rem}
     .kicker{color:var(--muted);font-weight:700}
@@ -77,7 +79,7 @@
     .grid{display:grid;grid-template-columns:3fr 2fr;gap:1.25rem;margin-top:1.2rem}
     @media(max-width:980px){.grid{grid-template-columns:1fr}}
 
-    .card{background:var(--card);color:#111111;/* ensure dark text on cream */border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
     .section{padding:1rem 1.1rem}
     .section h2{margin:.25rem 0 .5rem;font-size:1.2rem}
     .prose p,.prose li{max-width:75ch}
@@ -93,6 +95,21 @@
     .btn.secondary{background:transparent;color:var(--text)}
 
     footer{padding:2rem 0;color:var(--muted)}
+
+    /* =============================
+       ACCESSIBILITY FIX: ensure dark text on cream cards
+       ============================= */
+    .card,
+    .card h1,.card h2,.card h3,.card h4,
+    .card p,.card li,
+    .card a:not(.btn){
+      color:#111111; /* ink on cream */
+    }
+    /* adjust muted/kicker tone inside cream cards */
+    .card{ --muted:#374151; }
+    .card .kicker{ color:var(--muted); }
+    /* secondary buttons inside cream cards */
+    .card .btn.secondary{ color:#111111; border-color:#111111; }
   </style>
 </head>
 <body>
@@ -113,11 +130,11 @@
     <div class="container hero">
       <div class="kicker">Case Study 01</div>
       <h1 class="title">Premium Launch: London Market for Actors</h1>
-      <p class="lead">Inside a members‑only studio and modest budget, I launched the company’s highest‑priced program—an in‑person UK networking track for American actors—resulting in <strong>90 enrollments</strong> and <strong>$247,500 revenue</strong>, plus a waitlist. Budget used: <strong>$100</strong> for a targeted IG validation pilot and <strong>$200/month</strong> in SMS credits.</p>
+      <p class="lead">Inside a members-only studio and modest budget, I launched the company’s highest-priced program—an in-person UK networking track for American actors—resulting in <strong>90 enrollments</strong> and <strong>$247,500 revenue</strong>, plus a waitlist. Budget used: <strong>$100</strong> for a targeted IG validation pilot and <strong>$200/month</strong> in SMS credits.</p>
       <div class="meta">
-        <span class="chip">Members‑only</span>
-        <span class="chip">Owned‑channel first</span>
-        <span class="chip">Proof‑forward funnel</span>
+        <span class="chip">Members-only</span>
+        <span class="chip">Owned-channel first</span>
+        <span class="chip">Proof-forward funnel</span>
         <span class="chip">Email + SMS</span>
         <span class="chip">UK Agencies</span>
       </div>
@@ -133,15 +150,15 @@
       <article class="card prose">
         <div class="section">
           <h2 id="context">Context &amp; Goal</h2>
-          <p><strong>Organization:</strong> One on One / Next Level (members‑only community)</p>
+          <p><strong>Organization:</strong> One on One / Next Level (members-only community)</p>
           <p><strong>Market reality:</strong> Some UK agencies had been skeptical of American talent; credibility and proof mattered more than volume.</p>
-          <p><strong>Objective:</strong> Make a premium, scarce‑seat offer to members, fill the cohort, and validate a repeatable, low‑waste launch model.</p>
+          <p><strong>Objective:</strong> Make a premium, scarce-seat offer to members, fill the cohort, and validate a repeatable, low-waste launch model.</p>
         </div>
 
         <div class="section">
           <h2 id="constraints">Constraints</h2>
           <ul>
-            <li><strong>Audience:</strong> Closed—members only (no broad top‑of‑funnel buying).</li>
+            <li><strong>Audience:</strong> Closed—members only (no broad top-of-funnel buying).</li>
             <li><strong>Budget:</strong> $100 IG pilot to validate creative; $200/month SMS credits (strict pacing to avoid overage).</li>
             <li><strong>Timing:</strong> Limited application window with specific talent/partner availability.</li>
           </ul>
@@ -151,19 +168,19 @@
           <h2 id="strategy">Strategy</h2>
           <ul>
             <li><strong>Positioning:</strong> Lead with credibility—“Serious access, real rooms.” Back the promise with partner Q&amp;As, faculty reels, and alumni outcomes.</li>
-            <li><strong>Lifecycle engine:</strong> Sequenced email drips and segmented SMS (credit‑aware), plus partner co‑marketing, targeted phone outreach, and in‑studio print moments.</li>
+            <li><strong>Lifecycle engine:</strong> Sequenced email drips and segmented SMS (credit-aware), plus partner co-marketing, targeted phone outreach, and in-studio print moments.</li>
             <li><strong>Landing page:</strong> Concise copy, real quotes/logos/clips, and a short application path.</li>
-            <li><strong>Team enablement:</strong> Staff training and talk tracks to confidently sell in‑room during programming.</li>
-            <li><strong>Focused experimentation:</strong> A/B test message angles ("Access to reps" vs. "UK booking pipeline"), micro‑CTA language, and SMS timing to maintain urgency without fatigue.</li>
+            <li><strong>Team enablement:</strong> Staff training and talk tracks to confidently sell in-room during programming.</li>
+            <li><strong>Focused experimentation:</strong> A/B test message angles ("Access to reps" vs. "UK booking pipeline"), micro-CTA language, and SMS timing to maintain urgency without fatigue.</li>
           </ul>
         </div>
 
         <div class="section">
           <h2 id="execution">Execution Notes</h2>
           <ul>
-            <li>Built a full‑stack GTM around owned media; the IG spend was intentionally tiny and used primarily for creative validation (thumb‑stop rate, angle testing).</li>
+            <li>Built a full-stack GTM around owned media; the IG spend was intentionally tiny and used primarily for creative validation (thumb-stop rate, angle testing).</li>
             <li>Produced partner interview prompts; cut short video and quote assets to anchor emails and landing copy.</li>
-            <li>Implemented SMS segmentation, throttling, and time‑of‑day delivery to stay within $200/month credits while preserving response quality.</li>
+            <li>Implemented SMS segmentation, throttling, and time-of-day delivery to stay within $200/month credits while preserving response quality.</li>
           </ul>
         </div>
 
@@ -172,7 +189,7 @@
           <ul>
             <li>90 seats sold at an average $2,750 per seat → $247,500 in revenue.</li>
             <li>Program became the top performer of the past two years; waitlist created for the next cohort.</li>
-            <li>Messaging costs were contained; member experience remained high (no over‑messaging, no public “hard sell”).</li>
+            <li>Messaging costs were contained; member experience remained high (no over-messaging, no public “hard sell”).</li>
           </ul>
         </div>
 
@@ -188,8 +205,8 @@
           <h2 id="scale">What I’d Scale Next</h2>
           <ul>
             <li>Add retargeting (Meta/YouTube) around the winning landing page and creative.</li>
-            <li>Launch a member referral mini‑program (faculty clip + limited perk) and a 3‑email win‑back for waitlisted members.</li>
-            <li>Test a non‑member RSVP gate (information session) that still routes through a membership‑first path.</li>
+            <li>Launch a member referral mini-program (faculty clip + limited perk) and a 3-email win-back for waitlisted members.</li>
+            <li>Test a non-member RSVP gate (information session) that still routes through a membership-first path.</li>
           </ul>
           <p class="kicker">Capabilities Used — Email/SMS automation • CRM segmentation • Light paid social • Copy &amp; landing page testing • Video/motion/photography • Team enablement</p>
         </div>
@@ -204,17 +221,17 @@
         <div class="section">
           <h2>Highlights</h2>
           <ul>
-            <li>Members‑only offer with <strong>scarcity</strong> and <strong>proof‑first</strong> creative.</li>
-            <li>Owned‑channel lifecycle: email drips + segmented, throttled SMS.</li>
-            <li>In‑room staff enablement: talk tracks + printed prompts.</li>
+            <li>Members-only offer with <strong>scarcity</strong> and <strong>proof-first</strong> creative.</li>
+            <li>Owned-channel lifecycle: email drips + segmented, throttled SMS.</li>
+            <li>In-room staff enablement: talk tracks + printed prompts.</li>
           </ul>
         </div>
         <div class="section">
           <h2>Channels &amp; Tools</h2>
           <ul>
-            <li>Email (drips, segment‑aware)</li>
+            <li>Email (drips, segment-aware)</li>
             <li>SMS (credit pacing)</li>
-            <li>Partner co‑marketing</li>
+            <li>Partner co-marketing</li>
             <li>Creative: short video, faculty reels, alumni quotes</li>
           </ul>
         </div>
@@ -223,7 +240,7 @@
           <p>Interested in premium cohort launches? Let’s talk.</p>
           <div class="actions">
             <a class="btn primary" href="mailto:joelnasanroberson@gmail.com">Email Joel</a>
-            <a class="btn secondary" href="tel:+19047131424">Call (904) 713‑1424</a>
+            <a class="btn secondary" href="tel:+19047131424">Call (904) 713-1424</a>
           </div>
         </div>
       </aside>
