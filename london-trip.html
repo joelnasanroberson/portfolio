@@ -1,228 +1,210 @@
-<!-- london-trip.html — Premium Launch: London Market for Actors (FULL Bauhaus, self‑contained) -->
+<!-- london-trip.html — Premium Launch: London Market for Actors (standalone, self-styled) -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Premium Launch: London Market for Actors — 90 enrollments, $247,500 revenue. Owned‑channel GTM, proof‑forward funnel, segmented SMS." />
-  <meta name="theme-color" content="#E94F37" />
+  <meta name="description" content="Premium Launch: London Market for Actors — 90 enrollments, $247,500 revenue. Owned‑channel GTM, proof‑forward funnel, SMS cadence." />
+  <meta name="theme-color" content="#111827" />
   <meta property="og:title" content="Premium Launch — London Market for Actors" />
   <meta property="og:description" content="90 enrollments, $247,500 revenue. Members‑only premium program; proof‑forward funnel; email/SMS sequence." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="jr%20portfolio%20logo1.png" />
   <title>Premium Launch — London Market for Actors</title>
-
-  <!-- Fonts (match index.html) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="https://db.onlinewebfonts.com/c/f2b7f17d01f1f14802062ce0574b4d4a?family=Futura+PT" rel="stylesheet">
-
   <style>
-    /* =====================
-       BAUHAUS TOKENS (match index.html)
-    ====================== */
-    :root{
-      --bau-black:#0e0e0e; --bau-ink:#111111; --bau-cream:#F4F1E8;
-      --bau-red:#E94F37; --bau-blue:#1C7ED6; --bau-blue-light:#4da3f0; --bau-yellow:#F6C90E;
-      --header:'Futura PT', sans-serif; --sans:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --text:#f7f7f7; --text-muted: rgba(247,247,247,.82); --accent: var(--bau-red);
-      --ring: 0 0 0 3px rgba(28,126,214,.35);
-      --page-bg: var(--bau-black); --overlay-bg: rgba(0,0,0,.45);
-      --shape-1: var(--bau-blue); --shape-2: var(--bau-yellow); --shape-3: var(--bau-red); --shape-4: var(--bau-blue); --shape-ring: var(--bau-blue-light);
-      --radius:14px;
-    }
-
-    /* Base */
+    :root{--bg:#0b0c0f;--surface:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--brand:#f87171;--brand-600:#ef4444;--accent:#f59e0b;--card:#0b1220;--border:#1f2937;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:16px;--radius-lg:20px;--container:1100px}
+    @media (prefers-color-scheme: light){:root{--bg:#fafafa;--surface:#ffffff;--muted:#6b7280;--text:#111827;--brand:#ef4444;--brand-600:#dc2626;--accent:#b45309;--card:#ffffff;--border:#e5e7eb;--shadow:0 10px 25px rgba(0,0,0,.08)}}
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth;text-size-adjust:100%}
-    body{margin:0;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;min-height:100%;background:var(--page-bg);transition:background .35s ease,color .2s ease}
-    img{max-width:100%;display:block;height:auto}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),var(--surface));color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
     a{color:inherit;text-decoration:none}
-    :focus-visible{outline:none;box-shadow:var(--ring);border-radius:10px}
+    img{max-width:100%;display:block;height:auto}
+    .container{max-width:var(--container);margin:0 auto;padding:0 1rem}
+    header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(120%) blur(8px);background:color-mix(in oklab,var(--surface) 82%, transparent);border-bottom:1px solid var(--border)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:64px}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:700}
+    .brand img{width:36px;height:36px;border-radius:50%;box-shadow:var(--shadow)}
+    .menu{display:flex;align-items:center;gap:1rem}
+    .menu a{padding:.5rem .75rem;border-radius:999px;color:var(--muted);font-weight:600}
+    .menu a[aria-current="page"],.menu a:hover{color:var(--text);background:color-mix(in oklab,var(--brand) 18%, transparent)}
+    .menu-toggle{display:none}
+    @media(max-width:860px){.menu{display:none;position:absolute;right:1rem;top:64px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;flex-direction:column;box-shadow:var(--shadow)}.menu.open{display:flex}.menu-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text)}}
 
-    /* Backdrop composition (like index) */
-    .bauhaus{position:fixed;inset:0;z-index:-2;pointer-events:none}
-    .shape{position:absolute;pointer-events:none}
-    .shape.circle,.shape.ring{border-radius:50%}
-    .shape.blob{border-radius:42% 58% 50% 50% / 55% 40% 60% 45%}
-    .shape.semi{border-radius:50%;clip-path:inset(50% 0 0 0)}
+    main{padding:clamp(2.2rem,5vw,3.2rem) 0}
+    .hero{padding:1rem 0 0}
+    .title{font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.2;margin:.25rem 0 .5rem}
+    .kicker{color:var(--muted);font-weight:700}
+    .lead{color:var(--text);background:color-mix(in oklab,var(--brand) 10%, transparent);border:1px solid var(--border);padding:1rem;border-radius:var(--radius);box-shadow:var(--shadow)}
 
-    /* Header — mini Bauhaus nav */
-    header{position:sticky;top:0;z-index:100;padding:.75rem 1rem;background:linear-gradient(180deg,rgba(0,0,0,.42),transparent);backdrop-filter:saturate(120%) blur(2px)}
-    .header-inner{width:min(1120px,92vw);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-    .brand{display:flex;align-items:center;gap:.6rem}
-    .brand img{width:44px;height:44px;border-radius:9999px}
-    .site-nav{display:flex;align-items:center;gap:.25rem;background:var(--bau-cream);padding:.4rem;border-radius:9999px;border:2px solid var(--bau-ink)}
-    .site-nav a{font-family:var(--header);font-weight:800;letter-spacing:.03em;font-size:.92rem;padding:.5rem .8rem;border-radius:9999px;color:var(--bau-ink)}
-    .site-nav a:hover{background:var(--bau-ink);color:#fff}
-    .site-nav a[aria-current="page"]{background:var(--accent);color:#fff;border:2px solid var(--bau-ink)}
+    .meta{display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin:1rem 0}
+    .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;border-radius:999px;border:1px solid var(--border);background:color-mix(in oklab,var(--accent) 18%, transparent);font-weight:700;font-size:.88rem;color:color-mix(in oklab,var(--accent) 80%, var(--text))}
 
-    /* Layout */
-    main{isolation:isolate}
-    .container{width:min(1120px,92vw);margin-inline:auto}
+    .grid{display:grid;grid-template-columns:3fr 2fr;gap:1.25rem;margin-top:1.2rem}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
 
-    /* Hero */
-    .hero{display:grid;gap:1rem;justify-items:center;text-align:center;padding:6rem 1rem 2rem}
-    .kicker{font-family:var(--header);font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
-    h1{font-family:var(--header);font-size:clamp(2.2rem,5.6vw,3.8rem);letter-spacing:-.5px;margin:.25rem 0;color:var(--bau-blue-light)}
-    .lead{max-width:70ch;color:var(--text-muted);line-height:1.7}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+    .section{padding:1rem 1.1rem}
+    .section h2{margin:.25rem 0 .5rem;font-size:1.2rem}
+    .prose p,.prose li{max-width:75ch}
 
-    /* KPI chips */
-    .kpis{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.75rem}
-    .chip{background:var(--bau-cream);color:var(--bau-ink);border:2px solid var(--bau-ink);border-radius:999px;padding:.5rem .75rem;font-weight:800}
+    .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;padding:1.1rem}
+    @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+    .kpi{border:1px solid var(--border);border-radius:14px;padding:.75rem .9rem;background:color-mix(in oklab,var(--brand) 10%, transparent)}
+    .kpi strong{display:block;font-size:1.2rem}
 
-    /* Sections as flat cards */
-    .stack{display:grid;gap:1rem;padding:2rem 1rem 4rem}
-    .card{background:var(--bau-cream);color:var(--bau-ink);border:2px solid var(--bau-ink);border-radius:12px;padding:1.15rem}
-    .card h2{font-family:var(--header);margin:.25rem 0 .5rem}
-    .card ul{margin:.4rem 0 .6rem 1.2rem}
-    .card li{margin:.25rem 0}
-    .kicker{color:var(--text-muted)}
+    .actions{display:flex;gap:.75rem;flex-wrap:wrap;padding:1rem 0}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:999px;border:1px solid var(--border);font-weight:700}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+    .btn.secondary{background:transparent;color:var(--text)}
 
-    /* Buttons */
-    .actions{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;padding-top:.5rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-radius:10px;border:2px solid var(--bau-ink);font-weight:800}
-    .btn.primary{background:var(--accent);color:#fff}
-    .btn.secondary{background:var(--bau-cream);color:var(--bau-ink)}
-
-    footer{color:var(--text-muted);text-align:center;padding:2rem 1rem 3rem}
-
-    /* Motion (matches index) */
-    @keyframes blobMorph{0%{border-radius:42% 58% 50% 50%/55% 40% 60% 45%}50%{border-radius:58% 42% 47% 53%/45% 60% 40% 55%}100%{border-radius:42% 58% 50% 50%/55% 40% 60% 45%}}
-    @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    .shape.blob{animation:blobMorph 16s ease-in-out infinite;filter:url(#liquid)}
-    .shape.circle{animation:floatY 12s ease-in-out infinite;filter:url(#liquid-soft)}
-    @media (prefers-reduced-motion: reduce){.shape.blob,.shape.circle{animation:none;filter:none}}
+    footer{padding:2rem 0;color:var(--muted)}
   </style>
 </head>
 <body>
-  <!-- Bauhaus background -->
-  <div class="bauhaus" aria-hidden="true">
-    <span class="shape circle" style="width:360px;height:360px;left:-120px;top:-140px;background:var(--shape-1)"></span>
-    <span class="shape semi" style="width:300px;height:300px;left:-80px;bottom:-120px;background:var(--shape-2);transform:rotate(90deg)"></span>
-    <span class="shape blob" style="width:460px;height:360px;right:-140px;top:18vh;background:var(--shape-3)"></span>
-    <span class="shape ring" style="width:520px;height:520px;left:50%;top:48vh;transform:translate(-50%,-50%);border:18px solid var(--shape-ring)"></span>
-    <span class="shape" style="width:220px;height:28px;right:6vw;bottom:8vh;background:var(--shape-4)"></span>
-  </div>
-
-  <!-- SVG filters (organic motion) -->
-  <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute"><defs>
-    <filter id="liquid"><feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="2" seed="7"><animate attributeName="baseFrequency" dur="14s" values="0.006;0.009;0.006" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G"/></filter>
-    <filter id="liquid-soft"><feTurbulence type="fractalNoise" baseFrequency="0.004" numOctaves="2" seed="3"><animate attributeName="baseFrequency" dur="16s" values="0.004;0.006;0.004" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>
-  </defs></svg>
-
-  <!-- Header -->
-  <header role="banner">
-    <div class="header-inner">
-      <a class="brand" href="index.html" aria-label="Home">
-        <img src="jr%20portfolio%20logo1.png" alt="Joel Roberson logo" width="44" height="44" decoding="async"/>
-      </a>
-      <nav class="site-nav" aria-label="Primary">
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="index.html"><img src="jr%20portfolio%20logo1.png" alt="JR logo" /><span>Joel Roberson</span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Toggle menu">☰</button>
+      <nav id="menu" class="menu">
         <a href="index.html">Home</a>
-        <a href="cases.html" aria-current="page">Cases</a>
+        <a href="cases.html">Cases</a>
+        <a href="index.html#about">About</a>
         <a href="index.html#contact">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Main -->
-  <main id="main">
-    <section class="hero container" aria-label="Intro">
+  <main>
+    <div class="container hero">
       <div class="kicker">Case Study 01</div>
-      <h1>Premium Launch: London Market for Actors</h1>
-      <p class="lead">Inside a members‑only studio with a modest budget, I launched the company’s highest‑priced program — an in‑person UK networking track for American actors — resulting in <strong>90 enrollments</strong> and <strong>$247,500</strong> in revenue, plus a waitlist. Budget used: <strong>$100</strong> IG creative validation pilot and <strong>$200/month</strong> in SMS credits.</p>
-      <div class="kpis" role="list">
-        <span class="chip" role="listitem">Members‑only</span>
-        <span class="chip" role="listitem">Owned‑channel GTM</span>
-        <span class="chip" role="listitem">Proof‑forward landing</span>
-        <span class="chip" role="listitem">Email + segmented SMS</span>
+      <h1 class="title">Premium Launch: London Market for Actors</h1>
+      <p class="lead">Inside a members‑only studio and modest budget, I launched the company’s highest‑priced program—an in‑person UK networking track for American actors—resulting in <strong>90 enrollments</strong> and <strong>$247,500 revenue</strong>, plus a waitlist. Budget used: <strong>$100</strong> for a targeted IG validation pilot and <strong>$200/month</strong> in SMS credits.</p>
+      <div class="meta">
+        <span class="chip">Members‑only</span>
+        <span class="chip">Owned‑channel first</span>
+        <span class="chip">Proof‑forward funnel</span>
+        <span class="chip">Email + SMS</span>
+        <span class="chip">UK Agencies</span>
       </div>
-    </section>
-
-    <section class="stack container" aria-label="Details">
-      <article class="card"><h2>Context &amp; Goal</h2>
-        <p><strong>Organization:</strong> One on One / Next Level (members‑only community)</p>
-        <p><strong>Market reality:</strong> Some UK agencies had been skeptical of American talent; credibility and proof mattered more than volume.</p>
-        <p><strong>Objective:</strong> Position a premium, scarce‑seat offer to members, fill the cohort, and validate a repeatable, low‑waste launch model.</p>
-      </article>
-
-      <article class="card"><h2>Constraints</h2>
-        <ul>
-          <li><strong>Audience:</strong> Closed — members only (no broad top‑of‑funnel buying).</li>
-          <li><strong>Budget:</strong> $100 IG pilot to validate creative; $200/month SMS credits (strict pacing to avoid overage).</li>
-          <li><strong>Timing:</strong> Limited application window with specific talent/partner availability.</li>
-        </ul>
-      </article>
-
-      <article class="card"><h2>Strategy</h2>
-        <ul>
-          <li><strong>Positioning:</strong> Lead with credibility — “Serious access, real rooms.” Back with partner Q&amp;As, faculty reels, and alumni outcomes.</li>
-          <li><strong>Lifecycle engine:</strong> Sequenced email drips and segmented SMS (credit‑aware), plus partner co‑marketing, targeted phone outreach, and in‑studio print moments.</li>
-          <li><strong>Clear landing page:</strong> Concise copy, real quotes/logos/clips, and a short application path.</li>
-          <li><strong>Team enablement:</strong> Staff training and talk tracks to confidently sell in‑room during programming.</li>
-          <li><strong>Focused experimentation:</strong> A/B test angle (“Access to reps” vs. “UK booking pipeline”), micro‑CTA language, and SMS timing to maintain urgency without fatigue.</li>
-        </ul>
-      </article>
-
-      <article class="card"><h2>Execution Notes</h2>
-        <ul>
-          <li>Owned‑media GTM; IG spend used mainly for creative validation (thumb‑stop rate, angle tests).</li>
-          <li>Partner interview prompts → short video + quotes for emails and landing copy.</li>
-          <li>SMS segmentation, throttling, and time‑of‑day delivery to fit $200/month credits while preserving response quality.</li>
-        </ul>
-      </article>
-
-      <article class="card"><h2>Outcomes</h2>
-        <ul>
-          <li>90 seats sold at an average $2,750 per seat → <strong>$247,500 revenue</strong>.</li>
-          <li>Program became the top performer of the past two years; waitlist created for the next cohort.</li>
-          <li>Messaging costs contained; member experience remained high (no over‑messaging, no public “hard sell”).</li>
-        </ul>
-      </article>
-
-      <article class="card"><h2>Why It Worked</h2>
-        <ul>
-          <li>Matched credible proof to an audience that already trusted the brand (members).</li>
-          <li>A funnel emphasizing clarity and respect: succinct value, real outcomes, minimal friction.</li>
-        </ul>
-      </article>
-
-      <article class="card"><h2>What I’d Scale Next</h2>
-        <ul>
-          <li>Add retargeting (Meta/YouTube) around the winning landing page and creative.</li>
-          <li>Launch a member referral mini‑program (faculty clip + limited perk) and a 3‑email win‑back for waitlisted members.</li>
-          <li>Test a non‑member RSVP gate (information session) that still routes through a membership‑first path.</li>
-        </ul>
-        <p class="kicker">Capabilities — Email/SMS automation • CRM segmentation • Light paid social • Copy &amp; landing testing • Video/motion/photography • Team enablement</p>
-      </article>
-
-      <div class="actions">
-        <a class="btn primary" href="cases.html">← Back to Cases</a>
-        <a class="btn secondary" href="index.html">Home</a>
+      <div class="kpis card">
+        <div class="kpi"><strong>90</strong><span>Seats sold</span></div>
+        <div class="kpi"><strong>$247,500</strong><span>Revenue</span></div>
+        <div class="kpi"><strong>$100</strong><span>IG creative pilot</span></div>
+        <div class="kpi"><strong>$200/mo</strong><span>SMS credits</span></div>
       </div>
-    </section>
+    </div>
+
+    <div class="container grid">
+      <article class="card prose">
+        <div class="section">
+          <h2 id="context">Context &amp; Goal</h2>
+          <p><strong>Organization:</strong> One on One / Next Level (members‑only community)</p>
+          <p><strong>Market reality:</strong> Some UK agencies had been skeptical of American talent; credibility and proof mattered more than volume.</p>
+          <p><strong>Objective:</strong> Position a premium, scarce‑seat offer to members, fill the cohort, and validate a repeatable, low‑waste launch model.</p>
+        </div>
+
+        <div class="section">
+          <h2 id="constraints">Constraints</h2>
+          <ul>
+            <li><strong>Audience:</strong> Closed—members only (no broad top‑of‑funnel buying).</li>
+            <li><strong>Budget:</strong> $100 IG pilot to validate creative; $200/month SMS credits (strict pacing to avoid overage).</li>
+            <li><strong>Timing:</strong> Limited application window with specific talent/partner availability.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2 id="strategy">Strategy</h2>
+          <ul>
+            <li><strong>Positioning:</strong> Lead with credibility—“Serious access, real rooms.” Back the promise with partner Q&amp;As, faculty reels, and alumni outcomes.</li>
+            <li><strong>Lifecycle engine:</strong> Sequenced email drips and segmented SMS (credit‑aware), plus partner co‑marketing, targeted phone outreach, and in‑studio print moments.</li>
+            <li><strong>Landing page:</strong> Concise copy, real quotes/logos/clips, and a short application path.</li>
+            <li><strong>Team enablement:</strong> Staff training and talk tracks to confidently sell in‑room during programming.</li>
+            <li><strong>Focused experimentation:</strong> A/B test message angles ("Access to reps" vs. "UK booking pipeline"), micro‑CTA language, and SMS timing to maintain urgency without fatigue.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2 id="execution">Execution Notes</h2>
+          <ul>
+            <li>Built a full‑stack GTM around owned media; the IG spend was intentionally tiny and used primarily for creative validation (thumb‑stop rate, angle testing).</li>
+            <li>Produced partner interview prompts; cut short video and quote assets to anchor emails and landing copy.</li>
+            <li>Implemented SMS segmentation, throttling, and time‑of‑day delivery to stay within $200/month credits while preserving response quality.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2 id="outcomes">Outcomes</h2>
+          <ul>
+            <li>90 seats sold at an average $2,750 per seat → $247,500 in revenue.</li>
+            <li>Program became the top performer of the past two years; waitlist created for the next cohort.</li>
+            <li>Messaging costs were contained; member experience remained high (no over‑messaging, no public “hard sell”).</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2 id="why">Why It Worked</h2>
+          <ul>
+            <li>We matched credible proof to an audience that already trusted the brand (members).</li>
+            <li>The funnel emphasized clarity and respect: succinct value, real outcomes, and minimal friction.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2 id="scale">What I’d Scale Next</h2>
+          <ul>
+            <li>Add retargeting (Meta/YouTube) around the winning landing page and creative.</li>
+            <li>Launch a member referral mini‑program (faculty clip + limited perk) and a 3‑email win‑back for waitlisted members.</li>
+            <li>Test a non‑member RSVP gate (information session) that still routes through a membership‑first path.</li>
+          </ul>
+          <p class="kicker">Capabilities Used — Email/SMS automation • CRM segmentation • Light paid social • Copy &amp; landing page testing • Video/motion/photography • Team enablement</p>
+        </div>
+
+        <div class="section actions">
+          <a class="btn primary" href="cases.html">← Back to Cases</a>
+          <a class="btn secondary" href="index.html">Home</a>
+        </div>
+      </article>
+
+      <aside class="card">
+        <div class="section">
+          <h2>Highlights</h2>
+          <ul>
+            <li>Members‑only offer with <strong>scarcity</strong> and <strong>proof‑first</strong> creative.</li>
+            <li>Owned‑channel lifecycle: email drips + segmented, throttled SMS.</li>
+            <li>In‑room staff enablement: talk tracks + printed prompts.</li>
+          </ul>
+        </div>
+        <div class="section">
+          <h2>Channels &amp; Tools</h2>
+          <ul>
+            <li>Email (drips, segment‑aware)</li>
+            <li>SMS (credit pacing)</li>
+            <li>Partner co‑marketing</li>
+            <li>Creative: short video, faculty reels, alumni quotes</li>
+          </ul>
+        </div>
+        <div class="section">
+          <h2>Contact</h2>
+          <p>Interested in premium cohort launches? Let’s talk.</p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:joelnasanroberson@gmail.com">Email Joel</a>
+            <a class="btn secondary" href="tel:+19047131424">Call (904) 713‑1424</a>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <footer>
-    <div class="container"><small>© <span id="y"></span> Joel Roberson. All rights reserved.</small></div>
+    <div class="container">
+      <small>© <span id="y"></span> Joel Roberson. All rights reserved.</small>
+    </div>
   </footer>
 
   <script>
-    // ===== Palette helpers (trimmed to match index behavior) =====
-    const hexToRgb = (hex) => { let h = String(hex || '').replace('#',''); if (!h) return {r:0,g:0,b:0}; if (h.length === 3) h = h.split('').map(x => x + x).join(''); const num = parseInt(h, 16); return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 } };
-    const rgbToHsl = (r,g,b) => { r/=255; g/=255; b/=255; const max=Math.max(r,g,b),min=Math.min(r,g,b); let h,s,l=(max+min)/2; if(max===min){h=s=0} else { const d=max-min; s=l>0.5?d/(2-max-min):d/(max+min); switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4} h*=60 } s*=100; l*=100; return {h,s,l} };
-    const hexToHsl = (hex) => { const {r,g,b} = hexToRgb(hex); return rgbToHsl(r,g,b) };
-    const hslToHex = (h,s,l) => { s/=100; l/=100; const a=s*Math.min(l,1-l); const f=n=>{const k=(n+h/30)%12; const c=l-a*Math.max(-1,Math.min(k-3,Math.min(9-k,1))); return Math.round(255*c)}; const r=f(0), g=f(8), b=f(4); return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('') };
-    const clamp = (v,min,max) => Math.max(min, Math.min(max, v));
-    const yiq = (hex) => { const {r,g,b}=hexToRgb(hex); return (r*299 + g*587 + b*114)/1000 };
-    const hueDist = (a,b) => { let d = Math.abs((a||0)-(b||0))%360; return d>180?360-d:d };
-    const yiqIsLight = (hex) => yiq(hex) > 170;
-    function shadeForContrast(bgHex, baseHex, minDelta=65){ let {h,s,l}=hexToHsl(baseHex); s=clamp(s,88,98); l=clamp(l,34,66); const bgY=yiq(bgHex); let cur=hslToHex(h,s,l), curY=yiq(cur), tries=0; while(Math.abs(curY-bgY)<minDelta && tries<10){ l=(curY>bgY)?clamp(l-6,28,66):clamp(l+6,34,72); cur=hslToHex(h,s,l); curY=yiq(cur); tries++; } return cur; }
-    function buildStrictBauhausPalette(accent){ const cssVar=(k,fb)=>getComputedStyle(document.documentElement).getPropertyValue(k).trim()||fb; const RED=cssVar('--bau-red','#E94F37'), BLUE=cssVar('--bau-blue','#1C7ED6'), YELLOW=cssVar('--bau-yellow','#F6C90E'), BLUE_LT=cssVar('--bau-blue-light','#4da3f0'); const {h:ha}=hexToHsl(accent); const H={red:hexToHsl(RED).h, blue:hexToHsl(BLUE).h, yellow:hexToHsl(YELLOW).h}; const nearest=[{name:'red',hex:RED,d:hueDist(ha,H.red)},{name:'blue',hex:BLUE,d:hueDist(ha,H.blue)},{name:'yellow',hex:YELLOW,d:hueDist(ha,H.yellow)}].sort((a,b)=>a.d-b.d)[0]; const others=[{name:'red',hex:RED},{name:'blue',hex:BLUE},{name:'yellow',hex:YELLOW}].filter(o=>o.name!==nearest.name); const c1=shadeForContrast(accent, others[0].hex); const c2=shadeForContrast(accent, others[1].hex); const c3=shadeForContrast(accent, others[0].hex); const bar=shadeForContrast(accent, others[1].hex, 55); const ring=shadeForContrast(accent, BLUE_LT, 60); return{c1,c2,c3,bar,ring}; }
-    function applyTheme(color){ const root=document.documentElement; root.style.setProperty('--page-bg',color); root.style.setProperty('--accent',color); const {c1,c2,c3,bar,ring}=buildStrictBauhausPalette(color); root.style.setProperty('--shape-1',c1); root.style.setProperty('--shape-2',c2); root.style.setProperty('--shape-3',c3); root.style.setProperty('--shape-4',bar); root.style.setProperty('--shape-ring',ring); const lightBg=yiqIsLight(color); const text=lightBg?'#0e0e0e':'#f7f7f7'; const textMuted=lightBg?'rgba(0,0,0,.72)':'rgba(247,247,247,.82)'; root.style.setProperty('--text',text); root.style.setProperty('--text-muted',textMuted); const {r,g,b}=hexToRgb(color||'#1C7ED6'); const ringAlpha=lightBg?0.22:0.35; root.style.setProperty('--ring',`0 0 0 3px rgba(${r},${g},${b},${ringAlpha})`); }
-
-    // Init
-    document.getElementById('y').textContent = new Date().getFullYear();
-    applyTheme('#E94F37'); // Red accent for London case
+    const toggle=document.querySelector('.menu-toggle');
+    const menu=document.getElementById('menu');
+    toggle?.addEventListener('click',()=>{const open=menu.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});
+    document.getElementById('y').textContent=new Date().getFullYear();
   </script>
 </body>
 </html>
