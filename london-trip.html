@@ -12,8 +12,35 @@
   <meta property="og:image" content="jr%20portfolio%20logo1.png" />
   <title>Premium Launch — London Market for Actors</title>
   <style>
-    :root{--bg:#0b0c0f;--surface:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--brand:#f87171;--brand-600:#ef4444;--accent:#f59e0b;--card:#0b1220;--border:#1f2937;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:16px;--radius-lg:20px;--container:1100px}
-    @media (prefers-color-scheme: light){:root{--bg:#fafafa;--surface:#ffffff;--muted:#6b7280;--text:#111827;--brand:#ef4444;--brand-600:#dc2626;--accent:#b45309;--card:#ffffff;--border:#e5e7eb;--shadow:0 10px 25px rgba(0,0,0,.08)}}
+    :root{
+/* Dark theme (default) */
+--bg:#0e0e0e; /* bau-black */
+--surface:#111111; /* bau-ink */
+--muted:#F4F1E8; /* bau-cream used for muted accents on dark */
+--text:#f7f7f7; /* light text on dark */
+--brand:#E94F37; /* bau-red (page primary) */
+--brand-600:#E94F37; /* same red (no scale needed) */
+--accent:#F6C90E; /* bau-yellow (chips/accent) */
+--card:#F4F1E8; /* bau-cream cards */
+--border:#111111; /* bau-ink borders */
+--shadow:0 10px 25px rgba(0,0,0,.35);
+--radius:16px; --radius-lg:20px; --container:1100px;
+}
+@media (prefers-color-scheme: light){
+:root{
+/* Light theme (Bauhaus, with cream background and ink text) */
+--bg:#F4F1E8; /* bau-cream */
+--surface:#FFFFFF; /* white surface */
+--muted:#6b7280; /* neutral text hint (kept readable) */
+--text:#111111; /* bau-ink */
+--brand:#E94F37; /* bau-red */
+--brand-600:#E94F37; /* bau-red */
+--accent:#1C7ED6; /* bau-blue as secondary accent on light */
+--card:#FFFFFF; /* white cards on cream bg */
+--border:#111111; /* bau-ink */
+--shadow:0 10px 25px rgba(0,0,0,.10);
+}
+}
     *{box-sizing:border-box}
     body{margin:0;background:linear-gradient(180deg,var(--bg),var(--surface));color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
     a{color:inherit;text-decoration:none}
